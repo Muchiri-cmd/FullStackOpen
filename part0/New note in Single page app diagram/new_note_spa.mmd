@@ -1,0 +1,19 @@
+sequenceDiagram
+    participant User
+    participant Browser
+    participant Server
+   
+    User->>Browser: Fill out form and submit
+    Browser->>Browser: Prevent default form submission
+    Browser->>Browser: Create new note object
+    Browser->>Browser: Add note to local notes array
+    Browser->>Browser: Redraw notes list
+
+    %% Sending the new note to the server
+    note right of Browser: New note sent as JSON<br>Content-Type: application/json
+    Browser->>Server: POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa (Content-Type: application/json)
+    activate Server
+   
+    Server-->>Browser: HTTP 201 Created
+    deactivate Server
+    note right of Browser: No redirect, stay on the same page
