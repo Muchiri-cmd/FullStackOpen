@@ -1,0 +1,37 @@
+sequenceDiagram
+    participant browser
+    participant server
+
+    Note right of browser: The user submits a POST request adding a new note
+    browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/new_note
+    activate server
+    Note left of server: The server repsonds with a URL redirect to /notes 
+    server-->>browser: HTTP 302 Redirect (Location:https://studies.cs.helsinki.fi/exampleapp/notes )
+    deactivate server
+
+    Note right of browser: The browser reloads the notes page
+    browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/notes
+    activate server
+    server-->>browser: HTML document
+    deactivate server
+    
+    browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/main.css
+    activate server
+    server-->>browser: the css file
+    deactivate server
+
+    browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/main.js
+    activate server
+    server-->>browser: the JavaScript file
+    deactivate server
+
+    Note right of browser: The browser executes the JavaScript that fetches the latest JSON data from the server
+
+    browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/data.json
+    activate server
+    Note left of server:Server returns a Json Response 
+    server-->>browser: [{ "content": "text", "date": "2024-06-30T19:06:56.258Z" }, ...
+
+    deactivate server
+
+    Note right of browser: The browser executes the callback function that renders the notes
