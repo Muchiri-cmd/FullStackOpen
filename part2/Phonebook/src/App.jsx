@@ -1,63 +1,9 @@
 import { useState,useEffect } from "react";
 import personServices from './services/persons'
-
-const Filter = ({value,onChange}) => {
-  return (
-    <div className="search">
-       <label> <h3>Search By Name </h3>
-          <input className ="searchInput" value={value} onChange={onChange} placeholder="John Doe ..."/>
-      </label>
-    </div>
-  )
-}
-const Form = ({name,handleNameField,number,handleNumberField,onSubmit}) => {
-  return (
-    <form onSubmit={onSubmit} className="form">
-          <div className="input-wrapper">
-            <label>name:(e.g John Doe)
-              <input value={name} onChange={handleNameField} type="text" required/>
-            </label>
-          </div>
-
-          <div className="input-wrapper">
-            <label>number : (e.g 012345678)
-              <input value={number} onChange={handleNumberField} type="text" required/>
-            </label>
-          </div>
-
-          <div className="button-container">
-            <button className="submit-btn" type="submit">add</button>
-          </div>
-    </form>
-  )
-}
-const Persons  = ({list,deleteRecord}) => {
-  return(
-    <table>
-      <thead>
-        <tr>
-            <th>Name</th>
-            <th>Number</th>
-            <th>Delete</th>
-        </tr>
-      </thead>
-      <tbody>
-        {list.map(person => 
-              <Person key={person.id} id={person.id} name={person.name} number={person.phoneNumber} deleteRecord={deleteRecord}/>
-        )}
-      </tbody>
-      </table>
-  )
-}
-const Person = ({name,number,id,deleteRecord}) => {
-  return (
-    <tr>
-      <td>{name}</td>
-      <td>{number}</td>
-      <td><button className="delete-btn" onClick={() => deleteRecord(id)}>Delete</button></td>
-    </tr>
-  )
-} 
+import Filter from "./components/filter";
+import Form from "./components/form";
+import Persons from "./components/persons";
+import Notification from "./components/notification";
 
 const App = () => {
   const[persons,setPersons] = useState([])
@@ -144,7 +90,6 @@ const App = () => {
   }
 
   const deleteRecord = (id) => {
-   
     const person = persons.find(p => p.id === id)
     window.confirm(`Are you sure you want to delete ${person.name}'s record`)
     
@@ -167,44 +112,6 @@ const App = () => {
       });
   }
 
-  const Notification = ({message,error}) => {
-    const msgBoxStyles = {
-      color: 'green',
-      fontSize: '13px',
-      backgroundColor: 'whitesmoke',
-      borderRadius: '8px',
-      height: 'auto',
-      padding: '10px 20px',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      margin: 'auto',
-      marginBottom: '20px',
-      border: '1px solid green',
-      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-      transition: 'all 0.3s ease',
-      maxWidth: '500px'
-    } 
-    const errorBoxStyles = {
-      ...msgBoxStyles,
-      color:'red',
-      border:'1px solid red'
-    }
-    if (message === null && error === null)return null
-    if (message !== null){
-      return(
-        <div className="msgBox" style={msgBoxStyles}>
-          {message}
-        </div>
-      )
-    } else if (error !== null){
-      return(
-        <div className="errBox" style={errorBoxStyles}>
-          {error}
-        </div>
-      )
-    }
-  }
   return (
     <>
       <div className="header">
