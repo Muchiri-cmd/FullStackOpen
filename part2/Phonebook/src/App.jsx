@@ -3,53 +3,59 @@ import personServices from './services/persons'
 
 const Filter = ({value,onChange}) => {
   return (
-    <>
-       <label> filter shown with
-          <input value={value} onChange={onChange}/>
+    <div className="search">
+       <label> <h3>Search By Name </h3>
+          <input className ="searchInput" value={value} onChange={onChange} placeholder="John Doe ..."/>
       </label>
-    </>
+    </div>
   )
 }
 const Form = ({name,handleNameField,number,handleNumberField,onSubmit}) => {
   return (
-    <form onSubmit={onSubmit}>
-          <div>
-            <label>name:
-              <input value={name} onChange={handleNameField} />
+    <form onSubmit={onSubmit} className="form">
+          <div className="input-wrapper">
+            <label>name:(e.g John Doe)
+              <input value={name} onChange={handleNameField} type="text" required/>
             </label>
           </div>
 
-          <div>
-            <label>
-              number : <input value={number} onChange={handleNumberField}/>
+          <div className="input-wrapper">
+            <label>number : (e.g 012345678)
+              <input value={number} onChange={handleNumberField} type="text" required/>
             </label>
           </div>
 
-          <div>
-            <button type="submit">add</button>
+          <div className="button-container">
+            <button className="submit-btn" type="submit">add</button>
           </div>
     </form>
   )
 }
 const Persons  = ({list,deleteRecord}) => {
   return(
-    <>
-      {list.map(person => 
-        <Person key={person.id} id={person.id} name={person.name} number={person.phoneNumber} deleteRecord={deleteRecord}/>
-      )}
-    </>
+    <table>
+      <thead>
+        <tr>
+            <th>Name</th>
+            <th>Number</th>
+            <th>Delete</th>
+        </tr>
+      </thead>
+      <tbody>
+        {list.map(person => 
+              <Person key={person.id} id={person.id} name={person.name} number={person.phoneNumber} deleteRecord={deleteRecord}/>
+        )}
+      </tbody>
+      </table>
   )
 }
 const Person = ({name,number,id,deleteRecord}) => {
   return (
-    <div style={{margin: 1.5 + 'em'}}>
-      <span>{name} - {number}</span>
-      <button 
-        style={{marginLeft: 1.5 + 'em'}}
-        onClick={() => deleteRecord(id)}
-        >Delete
-      </button>
-    </div>
+    <tr>
+      <td>{name}</td>
+      <td>{number}</td>
+      <td><button className="delete-btn" onClick={() => deleteRecord(id)}>Delete</button></td>
+    </tr>
   )
 } 
 
@@ -69,6 +75,9 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber,setNewNumber] = useState('')
   const [searchVal,setNewSearchVal] = useState('')
+
+  const [message,setMessage] = useState(null)
+  const [error,setError] = useState(null)
 
   const handleNameField = (e) => setNewName(e.target.value)
   const handleNumberField = (e) => setNewNumber(e.target.value)
@@ -107,6 +116,10 @@ const App = () => {
         .then(returnedPerson =>{
            setPersons(persons.map(person => person.id !== id ? person : returnedPerson))
            setFilteredPersons(persons.map(person => person.id !== id ? person : returnedPerson))
+           setMessage(`${person.name}'s record successfully updated`)
+           setTimeout(()=>{
+            setMessage(null)
+          },1500)
         })
       setNewName('')
       setNewNumber('')
@@ -119,9 +132,13 @@ const App = () => {
           setFilteredPersons(persons.concat(personData))
           setNewName('')
           setNewNumber('')
+          setMessage(`${personData.name}'s record added successfully.`)
+          setTimeout(()=>{
+            setMessage(null)
+          },1500)
         }).catch(err => {
           console.log(err);
-          alert('Error adding person');
+          setError('Error adding person. Please try again.');
         });
     }
   }
@@ -137,23 +154,67 @@ const App = () => {
         const updatedPersons = persons.filter(p => p.id !== id);
         setPersons(updatedPersons);
         setFilteredPersons(updatedPersons);
-
+        setMessage(`${person.name}'s record deleted successfully`)
+        setTimeout(()=>{
+          setMessage(null)
+        },2000)
       }).catch(err => {
         console.log(err);
-        // alert(`The person ${person.name} was already deleted from server`);
-        alert(`Couldn't delete ${person.name}'s record . Check his record for errors `)
-        const updatedPersons = persons.filter(p => p.id !== id);
-        setPersons(updatedPersons);
-        setFilteredPersons(updatedPersons);
+        setError(`Couldn't delete ${person.name}'s record . Check his record for errors `)
+        setTimeout(()=>{
+          setError(null)
+        },2000)
       });
   }
 
+  const Notification = ({message,error}) => {
+    const msgBoxStyles = {
+      color: 'green',
+      fontSize: '13px',
+      backgroundColor: 'whitesmoke',
+      borderRadius: '8px',
+      height: 'auto',
+      padding: '10px 20px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      margin: 'auto',
+      marginBottom: '20px',
+      border: '1px solid green',
+      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+      transition: 'all 0.3s ease',
+      maxWidth: '500px'
+    } 
+    const errorBoxStyles = {
+      ...msgBoxStyles,
+      color:'red',
+      border:'1px solid red'
+    }
+    if (message === null && error === null)return null
+    if (message !== null){
+      return(
+        <div className="msgBox" style={msgBoxStyles}>
+          {message}
+        </div>
+      )
+    } else if (error !== null){
+      return(
+        <div className="errBox" style={errorBoxStyles}>
+          {error}
+        </div>
+      )
+    }
+  }
   return (
     <>
-      <h2>Phonebook</h2>
+      <div className="header">
+      <h1>Phonebook</h1>
       <Filter value={searchVal} onChange={handleSearch}/>
-      
-      <h3>Add a new</h3>
+      </div>
+  
+      <Notification message={message} error={error}/>
+
+      <h2>Add a new record</h2>
       <Form 
         onSubmit={handleSubmit}
         name={newName}
@@ -162,7 +223,7 @@ const App = () => {
         handleNumberField={handleNumberField}
       />
 
-      <h2>Numbers</h2>
+      <h2>Phonebook Records</h2>
       <Persons list={filteredPersons} deleteRecord={deleteRecord}/>
     </>
   )
