@@ -18,8 +18,6 @@ const mostBlogs = (blogs) => {
   if (blogs.length === 0) return null
   //group blogs by author
   const groupedByAuthors = _.groupBy(blogs,'author')
-  console.log(groupedByAuthors)
-
   //transform grouped datat into count of blogs per author
   const authorsBlogCounts = _.map(groupedByAuthors,(authorsBlogs,author) => {
     return ({ author , blogs:authorsBlogs.length })
@@ -34,8 +32,6 @@ const mostLikes = (blogs) => {
   if (blogs.length === 0 )return null
 
   const groupedByAuthors = _.groupBy(blogs,'author')
-  console.log(groupedByAuthors)
-
   //get author whose blog post have largest amount of likes
   const blogsLikeCounts = _.map(groupedByAuthors,(authorsBlogs,author) => {
     //calculate total likes for author
