@@ -20,4 +20,19 @@ appRouter.post('/',async (request, response) => {
   response.status(201).json(savedBlog)
 })
 
+appRouter.put('/:id',async(request,response) => {
+  const { title , author, url , likes } = request.body
+  const updatedBlogEntries = await Blog.findByIdAndUpdate(request.params.id,
+    { title , author, url , likes },
+    { new:true, runValidators:true, context:'query' }
+  )
+  response.json(updatedBlogEntries)
+})
+
+appRouter.delete('/:id', async (request,response) => {
+  await Blog.findByIdAndDelete(request.params.id)
+  response.status(204).end()
+})
+
+
 module.exports = appRouter

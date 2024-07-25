@@ -5,39 +5,13 @@ const supertest = require('supertest')
 const app = require('../app')
 const api = supertest(app)
 const faker = require('faker')
-
+const helper = require('./helpers.test')
 const Blog = require('../models/blog')
 
-const initialBlogEntries = [
-  {
-    title: faker.lorem.sentence(),
-    author: faker.name.findName(),
-    url: faker.internet.url(),
-    likes: faker.datatype.number({ min: 0, max: 1000 })
-  },
-  {
-    title: faker.lorem.sentence(),
-    author: faker.name.findName(),
-    url: faker.internet.url(),
-    likes: faker.datatype.number({ min: 0, max: 1000 })
-  },
-  {
-    title: faker.lorem.sentence(),
-    author: faker.name.findName(),
-    url: faker.internet.url(),
-    likes: faker.datatype.number({ min: 0, max: 1000 })
-  },
-  {
-    title: faker.lorem.sentence(),
-    author: faker.name.findName(),
-    url: faker.internet.url(),
-    likes: faker.datatype.number({ min: 0, max: 1000 })
-  }
-]
 
 beforeEach(async () => {
   await Blog.deleteMany({})
-  for (let blogEntry of initialBlogEntries){
+  for (let blogEntry of helper.blogs){
     let blogObject = new Blog(blogEntry)
     await blogObject.save()
   }
@@ -46,7 +20,7 @@ beforeEach(async () => {
 describe('test api endpoints', () => {
   test('application api returns correct amount of blog entries in JSON', async() => {
     const response =  await api.get('/api/blogs')
-    assert.strictEqual(response.body.length,initialBlogEntries.length)
+    assert.strictEqual(response.body.length,helper.blogs.length)
   })
 
   test('unique identifier property of the blog post is named id', async () => {
@@ -65,7 +39,6 @@ describe('test api endpoints', () => {
       url: faker.internet.url(),
       likes: faker.datatype.number({ min: 0, max: 1000 })
     }
-
     await api
       .post('/api/blogs')
       .send(newBlog)
@@ -74,9 +47,41 @@ describe('test api endpoints', () => {
 
     const response = await api.get('/api/blogs')
     //check if blogs length has increased
-    assert.strictEqual(response.body.length,initialBlogEntries.length+1)
+    assert.strictEqual(response.body.length,helper.blogs.length+1)
     const contents = response.body.map(x => x.title)
     assert(contents.includes(newBlog.title))
+  })
+
+  test('successfully updates a blog entry', async() => {
+    const blogs = await Blog.find({})
+    const initialBlogEntries = blogs.map(blog => blog.toJSON())
+    const blogEntryToUpdate = initialBlogEntries[0]
+
+    await api
+      .put(`/api/blogs/${blogEntryToUpdate.id}`)
+      .send({ ...blogEntryToUpdate, likes:20000 })
+      .expect('Content-Type',/application\/json/)
+
+    const response = await api.get('/api/blogs')
+    const firstBlogEntry = response.body[0]
+    const expected = firstBlogEntry
+    assert.deepStrictEqual(expected.likes,20000)
+  })
+
+  test('successfully deletes a blog entry ', async() => {
+    const blogs = await Blog.find({})
+    const initialBlogEntries = blogs.map(blog => blog.toJSON())
+    const blogEntryToDelete = initialBlogEntries[0]
+
+    await api
+      .delete(`/api/blogs/${blogEntryToDelete.id}`)
+      .expect(204)
+
+    const updatedBlogEntries = await Blog.find({})
+    const entries = updatedBlogEntries.map(b => b.title)
+
+    assert(!entries.includes(blogEntryToDelete.title))
+    assert.strictEqual(updatedBlogEntries.length,initialBlogEntries.length - 1)
   })
 })
 
@@ -128,6 +133,8 @@ describe('test requests formats and schema',() => {
     assert.strictEqual(responseWithoutURL.body.error, '400 Bad Request')
   })
 })
+
+
 
 after(async () => {
   await mongoose.connection.close()

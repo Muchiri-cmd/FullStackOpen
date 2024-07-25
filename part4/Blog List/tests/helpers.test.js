@@ -213,3 +213,4 @@ describe('author whose blog has highest amount of likes',() => {
   })
 })
 
+module.exports = { blogs }
