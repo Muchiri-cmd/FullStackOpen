@@ -7,11 +7,11 @@ const app = require('../app')
 const supertest = require('supertest')
 const api = supertest(app)
 
-describe('User Module',() => {
+describe('User Creation',() => {
   beforeEach(async () => {
     await User.deleteMany({})
-    const passwordHash = await bcrypt.hash('passwordless', 10)
-    const user = new User({ username: 'root', passwordHash })
+    const passwordHash = await bcrypt.hash('diealegend', 10)
+    const user = new User({ username: 'polo.capalot', passwordHash })
     await user.save()
   })
 
@@ -35,7 +35,63 @@ describe('User Module',() => {
     assert(usernames.includes(newUser.username))
   })
 
+  test('should be invalid if username is missing', async () => {
+    const newUser = { password: 'validpassword' }
+    const response = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    assert(response.body.error.includes('Username is required'))
+  })
+
+  test('user creation fails with proper status code if username already taken' ,async() => {
+    const InitialUsersInDb = (await User.find({})).map(u => u.toJSON())
+    const newUser = { username:'polo.capalot', name:'Tremani Bartlett', password:'diealegend' }
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    const updatedUsers = await User.find({})
+    assert(result.body.error.includes('Username already taken'))
+    assert.strictEqual(updatedUsers.length,InitialUsersInDb.length)
+  })
+
+  test('should be invalid if username is less than 3 characters', async () => {
+    const newUser = { username: 'ab', password: 'validpassword' }
+    const response = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type',/application\/json/)
+
+    assert(response.body.error.includes('Username must be atleast 3 characters long'))
+  })
+
+  test('should be invalid if password is less than 3 characters', async () => {
+    const newUser = { username: 'test user', password: 'ab' }
+    const response = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type',/application\/json/)
+    assert(response.body.error.includes('password must be atleast 3 characters long'))
+  })
+
+  test('should be invalid if password is missing', async () => {
+    const newUser = { username: 'validuser' }
+    const response = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+    assert(response.body.error.includes('Password is required'))
+  })
 })
-after(async() => {
-  mongoose.connection.close()
+
+after(async () => {
+  await mongoose.connection.close()
 })
