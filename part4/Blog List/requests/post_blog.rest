@@ -1,9 +1,10 @@
 POST http://localhost:3003/api/blogs
 Content-Type: application/json 
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBvbG8uY2FwYWxvdCIsImlkIjoiNjZhMzU3ZTBkODgzY2Q1YTg3YmIxNzdiIiwiaWF0IjoxNzIxOTk2ODExfQ.jan0JU1paK8YzVDxFRPxk5GvilfQJLRSVVN-XVwhakE
 
 {
-  "title":"Work Two Remote Jobs, Reach Financial Freedom",
-  "author":"Overemployed guy",
-  "url":"https://overemployed.com/",
-  "likes":20156
+  "title":"Stay Hungry, Stay Foolish",
+  "author":"Ben Wilson",
+  "url":"https://httotw.com/jobs",
+  "likes":56
 }

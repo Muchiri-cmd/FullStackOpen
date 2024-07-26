@@ -1,5 +1,15 @@
 const logger = require('./logger')
 
+const tokenExtractor = (request,response,next) => {
+  const auth = request.get('authorization')
+  if(auth && auth.startsWith('Bearer ')){
+    request.token = auth.replace('Bearer ', '')
+  } else {
+    request.token = null
+  }
+  next()
+}
+
 const errorHandler = (error,req,res,next) => {
   if (error.name === 'MongoServerError' && error.message.includes('E11000 duplicate key error')){
     return res.status(400).json({ error:'Username already taken' })
@@ -9,6 +19,8 @@ const errorHandler = (error,req,res,next) => {
     return res.status(400).json({ error: error.message })
   } else if (error.message && error.message.includes('Password is required')){
     return res.status(400).json({ error: error.message })
+  } else if (error.name === 'JsonWebTokenError'){
+    return res.status(401).json({ error:'token invalid' })
   }
   logger.error(error.message)
   next(error)
@@ -25,4 +37,4 @@ const requestLogger = ( req,res, next ) => {
   next()
 }
 
-module.exports = { errorHandler, unknownEndPoint , requestLogger }
+module.exports = { errorHandler, unknownEndPoint , requestLogger, tokenExtractor }
