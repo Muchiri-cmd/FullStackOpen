@@ -1,4 +1,5 @@
 const logger = require('./logger')
+const jwt = require('jsonwebtoken')
 
 const tokenExtractor = (request,response,next) => {
   const auth = request.get('authorization')
@@ -10,11 +11,27 @@ const tokenExtractor = (request,response,next) => {
   next()
 }
 
+const userExtractor = (request,response,next) => {
+  if (request.token) {
+    const token = jwt.verify(request.token, process.env.PASSPHRASE)
+    if (token && token.id) {
+      request.user = token
+    } else {
+      request.user = null
+    }
+  } else {
+    request.user = null
+  }
+  next()
+}
+
 const errorHandler = (error,req,res,next) => {
   if (error.name === 'MongoServerError' && error.message.includes('E11000 duplicate key error')){
     return res.status(400).json({ error:'Username already taken' })
   } else if (error.name === 'ValidationError'){
     return res.status(400).json({ error: error.message })
+  } else if(error.name ==='CastError') {
+    return res.status(400).send({ error:'Invalid resource id' })
   } else if  (error.message && error.message.includes('password must be atleast 3 characters long')) {
     return res.status(400).json({ error: error.message })
   } else if (error.message && error.message.includes('Password is required')){
@@ -37,4 +54,4 @@ const requestLogger = ( req,res, next ) => {
   next()
 }
 
-module.exports = { errorHandler, unknownEndPoint , requestLogger, tokenExtractor }
+module.exports = { errorHandler, unknownEndPoint , requestLogger, tokenExtractor, userExtractor }
