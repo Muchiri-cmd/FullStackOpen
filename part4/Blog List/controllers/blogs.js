@@ -1,26 +1,30 @@
-const appRouter = require('express').Router()
+const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
-appRouter.get('/', async (request, response) => {
-  const blogs = await Blog.find({})
+blogsRouter.get('/', async (request, response) => {
+  const blogs = await Blog.find({}).populate('user',{ username:1, name:1 })
   response.json(blogs)
 })
 
-appRouter.post('/',async (request, response) => {
+blogsRouter.post('/',async (request, response) => {
   const { title, author, url , likes } = request.body
+
   if (!title) {
     return response.status(400).json({ error: '400 Bad Request' })
-  }
-  if (!url) {
+  } else if (!url) {
     return response.status(400).json({ error: '400 Bad Request' })
   }
 
-  const blog = new Blog({ title, url, author,likes })
+  const user = await User.findById(request.body.userId)
+  const blog = new Blog({ title, url, author,likes ,user:user.id })
   const savedBlog = await blog.save()
+  user.blogs = user.blogs.concat(savedBlog._id)
+  await user.save()
   response.status(201).json(savedBlog)
 })
 
-appRouter.put('/:id',async(request,response) => {
+blogsRouter.put('/:id',async(request,response) => {
   const { title , author, url , likes } = request.body
   const updatedBlogEntries = await Blog.findByIdAndUpdate(request.params.id,
     { title , author, url , likes },
@@ -29,10 +33,10 @@ appRouter.put('/:id',async(request,response) => {
   response.json(updatedBlogEntries)
 })
 
-appRouter.delete('/:id', async (request,response) => {
+blogsRouter.delete('/:id', async (request,response) => {
   await Blog.findByIdAndDelete(request.params.id)
   response.status(204).end()
 })
 
 
-module.exports = appRouter
+module.exports = blogsRouter
