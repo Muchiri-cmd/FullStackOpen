@@ -5,13 +5,27 @@ const supertest = require('supertest')
 const app = require('../app')
 const api = supertest(app)
 const faker = require('faker')
-const helper = require('./helpers.test')
+const helper = require('./helper.test')
 const Blog = require('../models/blog')
+const jwt = require('jsonwebtoken')
+const User = require('../models/user')
+const bcrypt = require('bcrypt')
 
-
+let token
 beforeEach(async () => {
+  //create a test user and a token for test user
+  await User.deleteMany({})
+  const passwordHash = await bcrypt.hash('test123', 10)
+  const user = new User({ username: 'blogtester', passwordHash })
+  await user.save()
   await Blog.deleteMany({})
+
+  const tokenUser = { username:user.username , id:user.id }
+  token = jwt.sign(tokenUser,process.env.PASSPHRASE,{ expiresIn : 60 * 60 })
+
   for (let blogEntry of helper.blogs){
+    //add user id to connect each blog to user who created - test user
+    blogEntry.user = user._id
     let blogObject = new Blog(blogEntry)
     await blogObject.save()
   }
@@ -37,11 +51,13 @@ describe('test api endpoints', () => {
       title: faker.lorem.sentence(),
       author: faker.name.findName(),
       url: faker.internet.url(),
-      likes: faker.datatype.number({ min: 0, max: 1000 })
+      likes: faker.datatype.number({ min: 0, max: 1000 }),
     }
+
     await api
       .post('/api/blogs')
       .send(newBlog)
+      .set('Authorization', `Bearer ${token}`)
       .expect(201)
       .expect('Content-Type',/application\/json/)
 
@@ -75,6 +91,7 @@ describe('test api endpoints', () => {
 
     await api
       .delete(`/api/blogs/${blogEntryToDelete.id}`)
+      .set('Authorization', `Bearer ${token}`)
       .expect(204)
 
     const updatedBlogEntries = await Blog.find({})
@@ -82,6 +99,26 @@ describe('test api endpoints', () => {
 
     assert(!entries.includes(blogEntryToDelete.title))
     assert.strictEqual(updatedBlogEntries.length,initialBlogEntries.length - 1)
+  })
+
+  test('blog fails with proper status code 401 Unauthorized if token is not provided ', async() => {
+    const newBlog = {
+      title: faker.lorem.sentence(),
+      author: faker.name.findName(),
+      url: faker.internet.url(),
+      likes: faker.datatype.number({ min: 0, max: 1000 }),
+    }
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(401)
+      .expect('Content-Type',/application\/json/)
+
+    const response = await api.get('/api/blogs')
+
+    assert.strictEqual(response.body.length,helper.blogs.length)
+    const contents = response.body.map(x => x.title)
+    assert(!contents.includes(newBlog.title))
   })
 })
 
@@ -91,11 +128,12 @@ describe('test requests formats and schema',() => {
     const newBlog = {
       title: faker.lorem.sentence(),
       author: faker.name.findName(),
-      url: faker.internet.url(),
+      url: faker.internet.url()
     }
     const response = await api
       .post('/api/blogs')
       .send(newBlog)
+      .set('Authorization', `Bearer ${token}`)
       .expect(201)
       .expect('Content-Type', /application\/json/)
 
@@ -133,9 +171,6 @@ describe('test requests formats and schema',() => {
     assert.strictEqual(responseWithoutURL.body.error, '400 Bad Request')
   })
 })
-
-
-
 after(async () => {
   await mongoose.connection.close()
 })

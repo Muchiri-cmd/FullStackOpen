@@ -1,26 +1,28 @@
-const bcrypt = require('bcrypt')
-const { describe , beforeEach , test, after } = require('node:test')
+const { describe ,beforeEach, test, after } = require('node:test')
 const assert = require('node:assert')
 const User = require('../models/user')
 const mongoose = require('mongoose')
 const app = require('../app')
+const faker = require('faker')
 const supertest = require('supertest')
 const api = supertest(app)
+const bcrypt = require('bcrypt')
+
+
+beforeEach(async () => {
+  await User.deleteMany({})
+  const passwordHash = await bcrypt.hash('test123', 10)
+  const user = new User({ username: 'usertester', passwordHash })
+  await user.save()
+})
 
 describe('User Creation',() => {
-  beforeEach(async () => {
-    await User.deleteMany({})
-    const passwordHash = await bcrypt.hash('diealegend', 10)
-    const user = new User({ username: 'polo.capalot', passwordHash })
-    await user.save()
-  })
-
   test('successfully creates user', async () => {
     const InitialUsersInDb = await User.find({})
     const newUser = {
-      username: 'JuiceWRLD',
-      name: 'Jarad Higgins',
-      password: 'legendsneverdie',
+      username: faker.internet.userName(),
+      name: faker.name.findName(),
+      password: faker.internet.password(),
     }
     await api
       .post('/api/users')
@@ -47,8 +49,8 @@ describe('User Creation',() => {
   })
 
   test('user creation fails with proper status code if username already taken' ,async() => {
-    const InitialUsersInDb = (await User.find({})).map(u => u.toJSON())
-    const newUser = { username:'polo.capalot', name:'Tremani Bartlett', password:'diealegend' }
+    const InitialUsersInDb = await User.find({})
+    const newUser = { username:'usertester', name:'Tremani Bartlett', password:'test123' }
     const result = await api
       .post('/api/users')
       .send(newUser)

@@ -38,6 +38,8 @@ const errorHandler = (error,req,res,next) => {
     return res.status(400).json({ error: error.message })
   } else if (error.name === 'JsonWebTokenError'){
     return res.status(401).json({ error:'token invalid' })
+  } else if(error.message && error.message.includes('401 Unauthorized')){
+    return res.status(401).json({ error: error.message })
   }
   logger.error(error.message)
   next(error)

@@ -6,7 +6,8 @@
     "prod": "cross-env NODE_ENV=production nodemon index.js",
     "dev": "cross-env NODE_ENV=development nodemon index.js",
     "lint": "eslint .",
-    "test": "cross-env NODE_ENV=test node --test"
+    "test": "cross-env NODE_ENV=test node --test --test-concurrency=1",
+    "test:only": "node --test --test-only"
   },
   "author": "",
   "license": "ISC",
