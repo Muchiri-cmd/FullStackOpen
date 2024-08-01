@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect,useRef } from 'react'
 import Blog from './components/Blog'
 import Notification from "./components/notification";
 import blogService from './services/blogs'
@@ -19,6 +19,7 @@ const App = () => {
   const[url,setUrl] = useState('')
 
   const [blogFormVisible,setBlogFormVisible] = useState(false)
+  const blogFormRef = useRef()
 
   useEffect(() => {
     blogService.getAll()
@@ -60,6 +61,7 @@ const App = () => {
     event.preventDefault()
     try{
       const blog = await blogService.create({title,author,url})
+      blogFormRef.current.toggleVisibility()
       setBlogs(blogs.concat(blog))
       setTitle('')
       setAuthor('')
@@ -72,10 +74,10 @@ const App = () => {
       setErrorMessage(errorMessage)
     }
   }
-  
+
   const blogForm = () => {
     return (
-      <Toggle buttonLabel="Add blog">
+      <Toggle buttonLabel="Add blog" ref={blogFormRef}>
           <BlogForm
             title={title}
             author={author}
