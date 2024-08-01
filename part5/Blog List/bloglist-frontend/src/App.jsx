@@ -3,6 +3,8 @@ import Blog from './components/Blog'
 import Notification from "./components/notification";
 import blogService from './services/blogs'
 import loginService from './services/login'
+import BlogForm from './components/BlogForm';
+import Toggle from './components/Toggle';
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -15,6 +17,8 @@ const App = () => {
   const[title,setTitle] = useState('')
   const[author,setAuthor] = useState('')
   const[url,setUrl] = useState('')
+
+  const [blogFormVisible,setBlogFormVisible] = useState(false)
 
   useEffect(() => {
     blogService.getAll()
@@ -67,9 +71,23 @@ const App = () => {
     }catch(error){
       setErrorMessage(errorMessage)
     }
-  
   }
-
+  
+  const blogForm = () => {
+    return (
+      <Toggle buttonLabel="Add blog">
+          <BlogForm
+            title={title}
+            author={author}
+            url={url}
+            handleCreate={handleCreate}
+            handleTitleChange = {({ target }) => setTitle(target.value) }
+            handleAuthorChange = {({ target }) => setAuthor(target.value) }
+            handleUrlChange = { ({ target }) => setUrl(target.value) }
+          />
+      </Toggle>
+    )
+  }
   const loginForm = (
     <form onSubmit={handleLogin}>
       <div>Username:
@@ -84,23 +102,6 @@ const App = () => {
     </form>
   )
 
-  const blogForm = (
-    <form onSubmit={handleCreate}>
-    <div>Title:
-      <input type="text" name="title" value={title}
-      onChange={ ({ target }) => setTitle(target.value) }/>
-    </div>
-    <div>Author: 
-      <input type="text" name="author" value={author}
-      onChange={ ({ target }) => setAuthor(target.value) }/>
-    </div>
-    <div>Url: 
-      <input type="text" name="url" value={url}
-      onChange={ ({ target }) => setUrl(target.value) }/>
-    </div>
-    <button onClick={handleCreate} type='submit'>Create</button>
-  </form>
-  )
   return (
     <div>
       <h1>blogs</h1>
@@ -112,7 +113,7 @@ const App = () => {
           <button  onClick={handleLogout}> Logout</button>
 
           <h3>Create New</h3>
-          {blogForm}
+          {blogForm()}
           {blogs.map(blog =>
           <Blog key={blog.id} blog={blog} />
       )}
