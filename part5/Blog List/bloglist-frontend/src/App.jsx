@@ -75,7 +75,6 @@ const App = () => {
   }
 
   const handleAddLike = async (blog) => {
-    console.log(`blog :`, blog)
     try{
       const updatedBlog = {
         ...blog,
@@ -93,6 +92,28 @@ const App = () => {
     }
   }
   
+  const handleDelete = async(id) => {
+    const blog = blogs.find(blog => blog.id === id)
+    const confirm = window.confirm(`Remove ${blog.title} by ${blog.author}?`)
+
+    if (confirm){
+      try {
+        await blogService.remove(id)
+        setBlogs(blogs.filter(b => b.id !== id))
+        setMessage('Blog deleted successfully')
+        setTimeout(() => {
+          setMessage(null)
+        },2500)
+      }catch(error){
+        console.error(error)
+        setErrorMessage('Error deleting blog')
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 2500)
+      }
+    }
+    else return
+  }
   const blogForm = () => {
     return (
       <Toggle buttonLabel="Add blog" ref={blogFormRef}>
@@ -139,6 +160,8 @@ const App = () => {
           {sortedBlogs.map(blog =>
           <Blog key={blog.id} blog={blog} 
           handleAddLike={() => handleAddLike(blog)}
+          handleDelete={() => handleDelete(blog.id)}
+          currentUser = {user}
           />
       )}
         </>

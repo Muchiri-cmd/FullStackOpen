@@ -1,7 +1,6 @@
-import { useState } from "react"
-const Blog = ({ blog, handleAddLike }) => {
-
-  const [visible,setVisible] = useState(false)
+import { useState } from 'react'
+const Blog = ({ blog, handleAddLike, handleDelete, currentUser }) => {
+  const [visible, setVisible] = useState(false);
 
   const blogStyle = {
     paddingTop: 10,
@@ -9,32 +8,37 @@ const Blog = ({ blog, handleAddLike }) => {
     border: 'solid',
     borderWidth: 1,
     marginBottom: 5
-  }
+  };
 
-  const hide = { display:visible ? 'none': ''}
-  const show = { display:visible ? '' : 'none'}
-  
-  return(
+  const hide = { display: visible ? 'none' : '' };
+  const show = { display: visible ? '' : 'none' };
+
+  return (
     <>
-        <div style={{ ...blogStyle, ...hide }}>
-          {blog.title}, {blog.author}
-          <button onClick={ () => setVisible(true)}>View</button>
-        </div>  
-        <div style={{ ...blogStyle, ...show }}>
-          <p>{blog.title}
-            <button onClick={ () => setVisible(false)}>hide</button>
-          </p>
-          <p>{blog.url}</p>
-          <p>likes {blog.likes}
-            <button onClick={handleAddLike}>like</button>
-          </p>
-          <p>{blog.author}</p>
-        </div> 
+      <div style={{ ...blogStyle, ...hide }}>
+        {blog.title}, {blog.author}
+        <button onClick={() => setVisible(true)}>View</button>
+      </div>
+      <div style={{ ...blogStyle, ...show }}>
+        <p>{blog.title}
+          <button onClick={() => setVisible(false)}>hide</button>
+        </p>
+        <p>{blog.url}</p>
+        <p>likes {blog.likes}
+          <button onClick={handleAddLike}>like</button>
+        </p>
+        <p>{blog.author}</p>
+        {blog.user && blog.user.username && <br></br>}
+        {currentUser && (
+          <>
+            {currentUser.username === blog.user?.username && (
+              <button onClick={handleDelete}>Delete</button>
+            )}
+          </>
+        )}
+      </div>
     </>
+  );
+};
 
-
-  )
-  
-}
-
-export default Blog
+export default Blog;
