@@ -1,10 +1,10 @@
 import { useState, useEffect,useRef } from 'react'
 import Blog from './components/Blog'
-import Notification from "./components/notification";
+import Notification from './components/notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
-import BlogForm from './components/BlogForm';
-import Toggle from './components/Toggle';
+import BlogForm from './components/BlogForm'
+import Toggle from './components/Toggle'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -25,7 +25,7 @@ const App = () => {
       .then(blogs => setBlogs(blogs))
   }, [])
 
-  useEffect(()=> {
+  useEffect(() => {
     const authenticatedUser = window.localStorage.getItem('authenticatedUser')
     if(authenticatedUser){
       const user = JSON.parse(authenticatedUser)
@@ -37,36 +37,36 @@ const App = () => {
   const handleLogin = async(event) => {
     event.preventDefault()
     try{
-      const user = await loginService.login({ username, password})
+      const user = await loginService.login({ username, password })
       window.localStorage.setItem('authenticatedUser',JSON.stringify(user))
       setUser(user)
       setUsername('')
       setPassword('')
     } catch(error){
       setErrorMessage('wrong username or password')
-      setTimeout(()=>{
+      setTimeout(() => {
         setErrorMessage(null)
       },5000)
-    } 
+    }
   }
 
-  const handleLogout = (event)=>{
+  const handleLogout = (event) => {
     setUser(null)
     window.localStorage.removeItem('authenticatedUser')
     window.localStorage.clear()
   }
 
-  const handleCreate = async (event) =>{
+  const handleCreate = async (event) => {
     event.preventDefault()
     try{
-      const blog = await blogService.create({title,author,url})
+      const blog = await blogService.create({ title,author,url })
       blogFormRef.current.toggleVisibility()
       setBlogs(blogs.concat(blog))
       setTitle('')
       setAuthor('')
       setUrl('')
-      setMessage(`a new blog ${title} by ${author} added`) 
-      setTimeout(()=>{
+      setMessage(`a new blog ${title} by ${author} added`)
+      setTimeout(() => {
         setMessage(null)
       },2000)
     }catch(error){
@@ -91,7 +91,7 @@ const App = () => {
       }, 2000)
     }
   }
-  
+
   const handleDelete = async(id) => {
     const blog = blogs.find(blog => blog.id === id)
     const confirm = window.confirm(`Remove ${blog.title} by ${blog.author}?`)
@@ -117,15 +117,15 @@ const App = () => {
   const blogForm = () => {
     return (
       <Toggle buttonLabel="Add blog" ref={blogFormRef}>
-          <BlogForm
-            title={title}
-            author={author}
-            url={url}
-            handleCreate={handleCreate}
-            handleTitleChange = {({ target }) => setTitle(target.value) }
-            handleAuthorChange = {({ target }) => setAuthor(target.value) }
-            handleUrlChange = { ({ target }) => setUrl(target.value) }
-          />
+        <BlogForm
+          title={title}
+          author={author}
+          url={url}
+          handleCreate={handleCreate}
+          handleTitleChange = {({ target }) => setTitle(target.value) }
+          handleAuthorChange = {({ target }) => setAuthor(target.value) }
+          handleUrlChange = { ({ target }) => setUrl(target.value) }
+        />
       </Toggle>
     )
   }
@@ -133,11 +133,11 @@ const App = () => {
     <form onSubmit={handleLogin}>
       <div>Username:
         <input type="text" name="username" value={username}
-        onChange={ ({ target }) => setUsername(target.value) }/>
+          onChange={ ({ target }) => setUsername(target.value) }/>
       </div>
-      <div>Password: 
+      <div>Password:
         <input type="text" name="password" value={password}
-        onChange={ ({ target }) => setPassword(target.value) }/>
+          onChange={ ({ target }) => setPassword(target.value) }/>
       </div>
       <button type='submit'>Login</button>
     </form>
@@ -150,7 +150,7 @@ const App = () => {
       <h1>blogs</h1>
       <Notification message={message} error={errorMessage}/>
       {user===null && loginForm}
-      {user !== null && 
+      {user !== null &&
         <>
           {user.name} logged in
           <button  onClick={handleLogout}> Logout</button>
@@ -158,15 +158,15 @@ const App = () => {
           <h3>Create New</h3>
           {blogForm()}
           {sortedBlogs.map(blog =>
-          <Blog key={blog.id} blog={blog} 
-          handleAddLike={() => handleAddLike(blog)}
-          handleDelete={() => handleDelete(blog.id)}
-          currentUser = {user}
-          />
-      )}
+            <Blog key={blog.id} blog={blog}
+              handleAddLike={() => handleAddLike(blog)}
+              handleDelete={() => handleDelete(blog.id)}
+              currentUser = {user}
+            />
+          )}
         </>
       }
-      
+
     </div>
   )
 }

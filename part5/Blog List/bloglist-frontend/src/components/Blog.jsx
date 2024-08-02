@@ -1,6 +1,6 @@
 import { useState } from 'react'
 const Blog = ({ blog, handleAddLike, handleDelete, currentUser }) => {
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(false)
 
   const blogStyle = {
     paddingTop: 10,
@@ -8,10 +8,10 @@ const Blog = ({ blog, handleAddLike, handleDelete, currentUser }) => {
     border: 'solid',
     borderWidth: 1,
     marginBottom: 5
-  };
+  }
 
-  const hide = { display: visible ? 'none' : '' };
-  const show = { display: visible ? '' : 'none' };
+  const hide = { display: visible ? 'none' : '' }
+  const show = { display: visible ? '' : 'none' }
 
   return (
     <>
@@ -38,7 +38,7 @@ const Blog = ({ blog, handleAddLike, handleDelete, currentUser }) => {
         )}
       </div>
     </>
-  );
-};
+  )
+}
 
-export default Blog;
+export default Blog

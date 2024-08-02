@@ -13,7 +13,7 @@ const getAll = () => {
 }
 
 const create = async newBlog => {
-  const authorization = { headers:{ Authorization: token}}
+  const authorization = { headers:{ Authorization: token } }
   const response = await axios.post(baseUrl,newBlog,authorization)
   return response.data
 }
@@ -24,7 +24,7 @@ const like = async (id,updatedBlog) => {
 }
 
 const remove = async id => {
-  const authorization = { headers:{ Authorization: token}}
+  const authorization = { headers:{ Authorization: token } }
   const response = await axios.delete(`${baseUrl}/${id}`,authorization)
   return response.data
 }

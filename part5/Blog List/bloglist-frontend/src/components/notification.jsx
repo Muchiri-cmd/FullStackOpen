@@ -1,4 +1,4 @@
-const Notification = ({message,error}) => {
+const Notification = ({ message,error }) => {
   const msgBoxStyles = {
     color: 'green',
     fontSize: '13px',
@@ -15,7 +15,7 @@ const Notification = ({message,error}) => {
     boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
     transition: 'all 0.3s ease',
     maxWidth: '500px'
-  } 
+  }
   const errorBoxStyles = {
     ...msgBoxStyles,
     color:'red',
