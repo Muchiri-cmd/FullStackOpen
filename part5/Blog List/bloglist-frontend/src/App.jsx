@@ -122,6 +122,8 @@ const App = () => {
     </form>
   )
 
+
+  const sortedBlogs = [...blogs].sort((a,b) => b.likes - a.likes)
   return (
     <div>
       <h1>blogs</h1>
@@ -134,7 +136,7 @@ const App = () => {
 
           <h3>Create New</h3>
           {blogForm()}
-          {blogs.map(blog =>
+          {sortedBlogs.map(blog =>
           <Blog key={blog.id} blog={blog} 
           handleAddLike={() => handleAddLike(blog)}
           />
