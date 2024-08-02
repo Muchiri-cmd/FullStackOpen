@@ -18,7 +18,6 @@ const App = () => {
   const[author,setAuthor] = useState('')
   const[url,setUrl] = useState('')
 
-  const [blogFormVisible,setBlogFormVisible] = useState(false)
   const blogFormRef = useRef()
 
   useEffect(() => {
@@ -75,6 +74,25 @@ const App = () => {
     }
   }
 
+  const handleAddLike = async (blog) => {
+    console.log(`blog :`, blog)
+    try{
+      const updatedBlog = {
+        ...blog,
+        likes:blog.likes + 1,
+        user:blog.user.id
+      }
+      const returnedBlog = await blogService.like(blog.id,updatedBlog)
+      setBlogs(blogs.map(b => ( b.id !== blog.id ? b : returnedBlog )))
+    }catch(error){
+      console.error(error)
+      setErrorMessage('Error updating likes')
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 2000)
+    }
+  }
+  
   const blogForm = () => {
     return (
       <Toggle buttonLabel="Add blog" ref={blogFormRef}>
@@ -117,7 +135,9 @@ const App = () => {
           <h3>Create New</h3>
           {blogForm()}
           {blogs.map(blog =>
-          <Blog key={blog.id} blog={blog} />
+          <Blog key={blog.id} blog={blog} 
+          handleAddLike={() => handleAddLike(blog)}
+          />
       )}
         </>
       }
