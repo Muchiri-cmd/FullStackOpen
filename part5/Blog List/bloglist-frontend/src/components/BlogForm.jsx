@@ -11,20 +11,20 @@ const BlogForm = ({
 }) => {
   return(
     <>
-      <form onSubmit={handleCreate}>
+      <form onSubmit={handleCreate} className="formDiv">
         <div>Title:
-          <input type="text" name="title" value={title}
+          <input id="title" type="text" name="title" placeholder="blog title" value={title}
             onChange={handleTitleChange}/>
         </div>
         <div>Author:
-          <input type="text" name="author" value={author}
+          <input id="author" type="text" name="author" placeholder="author name" value={author}
             onChange={handleAuthorChange}/>
         </div>
         <div>Url:
-          <input type="text" name="url" value={url}
+          <input id="url" type="text" name="url" placeholder="blog url" value={url}
             onChange={handleUrlChange}/>
         </div>
-        <button onClick={handleCreate} type='submit'>Create</button>
+        <button type='submit'>Create</button>
       </form>
     </>
 

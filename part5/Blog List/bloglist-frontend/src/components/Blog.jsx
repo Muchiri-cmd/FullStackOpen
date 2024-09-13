@@ -15,11 +15,11 @@ const Blog = ({ blog, handleAddLike, handleDelete, currentUser }) => {
 
   return (
     <>
-      <div style={{ ...blogStyle, ...hide }}>
+      <div style={{ ...blogStyle, ...hide }} className="blog">
         {blog.title}, {blog.author}
         <button onClick={() => setVisible(true)}>View</button>
       </div>
-      <div style={{ ...blogStyle, ...show }}>
+      <div style={{ ...blogStyle, ...show }} className="blogDetails">
         <p>{blog.title}
           <button onClick={() => setVisible(false)}>hide</button>
         </p>
