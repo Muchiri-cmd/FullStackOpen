@@ -11,7 +11,7 @@ const BlogForm = ({
 }) => {
   return(
     <>
-      <form onSubmit={handleCreate} className="formDiv">
+      <form onSubmit={handleCreate}>
         <div>Title:
           <input id="title" type="text" name="title" placeholder="blog title" value={title}
             onChange={handleTitleChange}/>

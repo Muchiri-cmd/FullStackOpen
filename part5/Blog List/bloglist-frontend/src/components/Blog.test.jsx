@@ -52,5 +52,38 @@ describe('<Blog />', () => {
     expect(mockHandler.mock.calls).toHaveLength(2)
 
   })
+})
+
+
+describe('<BlogForm />', () => {
+  test('Checks that form calls event handler with the right details when a new blog is created', async () => {
+    const createBlog = vi.fn()
+    const user = userEvent.setup()
+
+    const { container } = render(
+      <BlogForm
+        title=''
+        author=''
+        url=''
+        handleCreate={createBlog}
+        handleTitleChange={vi.fn()}
+        handleAuthorChange={vi.fn()}
+        handleUrlChange={vi.fn()}
+      />)
+
+    const title = container.querySelector('#title')
+    const author = container.querySelector('#author')
+    const url = container.querySelector('#url')
+    const sendButton = screen.getByText('Create')
+
+    await user.type(title,'How to get rich without getting lucky')
+    await user.type(author,'Naval Ravikant')
+    await user.type(url,'https://nav.al/rich')
+
+    await user.click(sendButton)
+
+    expect(createBlog.mock.calls).toHaveLength(1)
+
+  })
 
 })
