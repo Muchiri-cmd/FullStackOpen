@@ -133,11 +133,11 @@ const App = () => {
     <form id="loginForm" onSubmit={handleLogin}>
       <div>Username:
         <input type="text" name="username" value={username}
-          onChange={ ({ target }) => setUsername(target.value)}/>
+          onChange={ ({ target }) => setUsername(target.value)} data-testId="username"/>
       </div>
       <div>Password:
         <input type="text" name="password" value={password}
-          onChange={ ({ target }) => setPassword(target.value) }/>
+          onChange={ ({ target }) => setPassword(target.value) } data-testId="password"/>
       </div>
       <button type='submit'>Login</button>
     </form>
