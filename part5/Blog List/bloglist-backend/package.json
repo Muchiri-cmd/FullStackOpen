@@ -8,7 +8,8 @@
     "build:ui":"rm -rf dist && cd ../bloglist-frontend && npm run build && cp -r dist ../bloglist-backend",
     "lint": "eslint .",
     "test": "cross-env NODE_ENV=test node --test --test-concurrency=1",
-    "test:only": "node --test --test-only"
+    "test:only": "node --test --test-only",
+    "start:test":"cross-env NODE_ENV=test node index.js"
   },
   "author": "",
   "license": "ISC",
