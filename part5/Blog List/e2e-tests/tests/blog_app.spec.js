@@ -1,5 +1,4 @@
 const { test, expect,beforeEach,describe } = require('@playwright/test')
-const { request } = require('http')
 
 describe('Blog app', () => {
   beforeEach(async ({ page,request }) => {
@@ -38,5 +37,24 @@ describe('Blog app', () => {
       // await expect(page.getByText('wrong username or password')).toBeVisible()
       const errorBox = await page.locator('.errBox')
       await expect(errorBox).toContainText('wrong username or password')
+  })
+
+  describe('when logged in', () => {
+    beforeEach(async ({page}) => {
+      await page.getByRole('button', { name: 'Login' }).click()
+      await page.getByTestId('username').fill('davisdevelops')
+      await page.getByTestId('password').fill('rockyou')
+      await page.getByRole('button', { name: 'Login' }).click()
+    })
+    test('a new blog can be created', async ({ page }) => {
+      await page.getByRole('button',{ name:'Add blog' }).click()
+      await page.getByPlaceholder('blog title').fill('test blog created by playwright')
+      await page.getByPlaceholder('author name').fill('playwright')
+      await page.getByPlaceholder('blog url').fill('playwright.com')
+      await page.getByRole('button',{ name:'Create' }).click()
+
+      const blogs = await page.locator('.blog')
+      await expect(blogs).toContainText('test blog created by playwright')
+    })
   })
 })

@@ -39,6 +39,8 @@ const App = () => {
     try{
       const user = await loginService.login({ username, password })
       window.localStorage.setItem('authenticatedUser',JSON.stringify(user))
+      //set token after login
+      blogService.setToken(user.token)
       setUser(user)
       setUsername('')
       setPassword('')
@@ -133,11 +135,11 @@ const App = () => {
     <form id="loginForm" onSubmit={handleLogin}>
       <div>Username:
         <input type="text" name="username" value={username}
-          onChange={ ({ target }) => setUsername(target.value)} data-testId="username"/>
+          onChange={ ({ target }) => setUsername(target.value)} data-testid="username"/>
       </div>
       <div>Password:
         <input type="text" name="password" value={password}
-          onChange={ ({ target }) => setPassword(target.value) } data-testId="password"/>
+          onChange={ ({ target }) => setPassword(target.value) } data-testid="password"/>
       </div>
       <button type='submit'>Login</button>
     </form>
