@@ -56,5 +56,31 @@ describe('Blog app', () => {
       const blogs = await page.locator('.blog')
       await expect(blogs).toContainText('test blog created by playwright')
     })
+    test('blog can be liked',async ({ page }) => {
+      await page.getByRole('button',{ name:'Add blog' }).click()
+      await page.getByPlaceholder('blog title').fill('test blog created by playwright')
+      await page.getByPlaceholder('author name').fill('playwright')
+      await page.getByPlaceholder('blog url').fill('playwright.com')
+      await page.getByRole('button',{ name:'Create' }).click()
+
+      // Toggle blog details view
+      await page.getByRole('button', { name: 'View' }).click();
+
+      const likesCounter = page.locator('.likes-count');      
+      // Get initial likes
+      await likesCounter.waitFor({ state: 'visible' });
+      const initialLikes = await likesCounter.evaluate((element) => parseInt(element.textContent))
+
+      // Click like
+      await page.getByRole('button', { name: 'like' }).click()
+
+      // Wait for likes to update and get updated likes
+      await expect(likesCounter).toHaveText(`${initialLikes + 1}`, { timeout: 5000 })
+
+      const updatedLikes = await likesCounter.evaluate((el) => parseInt(el.textContent))
+
+      // Expect likes to increase
+      expect(updatedLikes).toBe(initialLikes + 1);
+    })
   })
 })

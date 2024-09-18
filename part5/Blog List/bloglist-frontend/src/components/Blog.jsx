@@ -24,7 +24,7 @@ const Blog = ({ blog, handleAddLike, handleDelete, currentUser }) => {
           <button onClick={() => setVisible(false)}>hide</button>
         </p>
         <p>{blog.url}</p>
-        <p>likes {blog.likes}
+        <p>likes <span className='likes-count'>{blog.likes}</span>
           <button onClick={handleAddLike}>like</button>
         </p>
         <p>{blog.author}</p>
