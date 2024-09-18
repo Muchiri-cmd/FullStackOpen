@@ -92,6 +92,32 @@ describe('Blog app', () => {
       await expect(page.locator('.blog:has-text("a test blog created by playwright")')).not.toBeVisible()
 
     })
+    test('ensures only user who added the blog sees the blog delete button',async({page,request})=>{
+      await page.getByRole('button', { name:'View' }).click()
+      const deleteButtonVisible = await page.isVisible('button:has-text("Delete")')
+      expect(deleteButtonVisible).toBe(true)
+
+      //create anonymous user
+      await request.post('http://localhost:3003/api/users',{
+        data: {
+          name: 'Anonymous User',
+          username: 'anonymous_user',
+          password: 'rockyou'
+        }
+      })
+
+      //logout 
+      await page.getByRole('button',{ name:'Logout' }).click()
+      await page.getByRole('button', { name: 'Login' }).click()
+      await page.getByTestId('username').fill('anonymous_user')
+      await page.getByTestId('password').fill('rockyou')
+      await page.getByRole('button', { name: 'Login' }).click()
+      //ensure delete button is not visble for anonymous user
+      await page.getByRole('button', { name:'View' }).click()
+      const deleteButtonInvisible = await page.isVisible('button:has-text("Delete")')
+      expect(deleteButtonInvisible).toBe(false)
+    
+    })
     
   })
 })
