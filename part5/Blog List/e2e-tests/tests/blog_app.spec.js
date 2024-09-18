@@ -45,30 +45,27 @@ describe('Blog app', () => {
       await page.getByTestId('username').fill('davisdevelops')
       await page.getByTestId('password').fill('rockyou')
       await page.getByRole('button', { name: 'Login' }).click()
+
+      //create a test blog
+      await page.getByRole('button',{ name:'Add blog' }).click()
+      await page.getByPlaceholder('blog title').fill('a test blog created by playwright')
+      await page.getByPlaceholder('author name').fill('davisdevelops')
+      await page.getByPlaceholder('blog url').fill('playwright.com')
+      await page.getByRole('button',{ name:'Create' }).click()
     })
+
     test('a new blog can be created', async ({ page }) => {
-      await page.getByRole('button',{ name:'Add blog' }).click()
-      await page.getByPlaceholder('blog title').fill('test blog created by playwright')
-      await page.getByPlaceholder('author name').fill('playwright')
-      await page.getByPlaceholder('blog url').fill('playwright.com')
-      await page.getByRole('button',{ name:'Create' }).click()
-
       const blogs = await page.locator('.blog')
-      await expect(blogs).toContainText('test blog created by playwright')
+      await expect(blogs).toContainText('a test blog created by playwright')
     })
+
     test('blog can be liked',async ({ page }) => {
-      await page.getByRole('button',{ name:'Add blog' }).click()
-      await page.getByPlaceholder('blog title').fill('test blog created by playwright')
-      await page.getByPlaceholder('author name').fill('playwright')
-      await page.getByPlaceholder('blog url').fill('playwright.com')
-      await page.getByRole('button',{ name:'Create' }).click()
-
       // Toggle blog details view
-      await page.getByRole('button', { name: 'View' }).click();
+      await page.getByRole('button', { name: 'View' }).click()
 
-      const likesCounter = page.locator('.likes-count');      
+      const likesCounter = page.locator('.likes-count')
       // Get initial likes
-      await likesCounter.waitFor({ state: 'visible' });
+      await likesCounter.waitFor({ state: 'visible' })
       const initialLikes = await likesCounter.evaluate((element) => parseInt(element.textContent))
 
       // Click like
@@ -82,5 +79,19 @@ describe('Blog app', () => {
       // Expect likes to increase
       expect(updatedLikes).toBe(initialLikes + 1);
     })
+
+    test('ensure user who added blog can delete blog', async ({page}) => {
+      await page.getByRole('button', { name:'View' }).click()
+      page.once('dialog', async (dialog) => {
+        console.log(`Dialog message: ${dialog.message()}`)
+        await dialog.accept();
+      });
+      page.getByRole('button', { name:'Delete'}).click()
+
+      await expect(page.locator('text=Blog deleted successfully')).toBeVisible()
+      await expect(page.locator('.blog:has-text("a test blog created by playwright")')).not.toBeVisible()
+
+    })
+    
   })
 })

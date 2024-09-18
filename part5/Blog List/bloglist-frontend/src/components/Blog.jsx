@@ -17,7 +17,7 @@ const Blog = ({ blog, handleAddLike, handleDelete, currentUser }) => {
     <>
       <div style={{ ...blogStyle, ...hide }} className="blog">
         {blog.title}, {blog.author}
-        <button onClick={() => setVisible(true)}>View</button>
+        <button onClick={() => setVisible(true)}>&nbsp;View</button>
       </div>
       <div style={{ ...blogStyle, ...show }} className="blogDetails">
         <p>{blog.title}
@@ -29,11 +29,9 @@ const Blog = ({ blog, handleAddLike, handleDelete, currentUser }) => {
         </p>
         <p>{blog.author}</p>
         {blog.user && blog.user.username && <br></br>}
-        {currentUser && (
+        {currentUser && blog.user && currentUser.username === blog.user.username && (
           <>
-            {currentUser.username === blog.user?.username && (
-              <button onClick={handleDelete}>Delete</button>
-            )}
+            <button onClick={handleDelete}>Delete</button>
           </>
         )}
       </div>

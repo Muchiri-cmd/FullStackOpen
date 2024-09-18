@@ -62,6 +62,8 @@ const App = () => {
     event.preventDefault()
     try{
       const blog = await blogService.create({ title,author,url })
+      //set blog user to one who created blog
+      blog.user = user
       blogFormRef.current.toggleVisibility()
       setBlogs(blogs.concat(blog))
       setTitle('')
