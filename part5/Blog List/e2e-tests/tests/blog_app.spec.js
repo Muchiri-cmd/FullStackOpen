@@ -1,4 +1,5 @@
 const { test, expect,beforeEach,describe } = require('@playwright/test')
+import { createBlog, login } from './helper'
 
 describe('Blog app', () => {
   beforeEach(async ({ page,request }) => {
@@ -21,37 +22,22 @@ describe('Blog app', () => {
 
   describe('Login', () => {
     test('succeeds with correct credentials', async ({ page }) => {
-      await page.getByRole('button',{name:'Login'}).click()
-      await page.getByTestId('username').fill('davisdevelops')
-      await page.getByTestId('password').fill('rockyou')
-      await page.getByRole('button', { name:'Login'}).click()
-
+      login(page,'davisdevelops','rockyou')
       await expect(page.getByText('Davis Muchiri logged in')).toBeVisible()
     })
   })
   test('fails with wrong credentials', async ({ page }) => {
-      await page.getByRole('button',{name:'Login'}).click()
-      await page.getByTestId('username').fill('davisdevelops')
-      await page.getByTestId('password').fill('wrong')
-
-      // await expect(page.getByText('wrong username or password')).toBeVisible()
-      const errorBox = await page.locator('.errBox')
+      login(page,'davisdevelops','wrong')
+      const errorBox = page.locator('.errBox')
       await expect(errorBox).toContainText('wrong username or password')
   })
 
   describe('when logged in', () => {
     beforeEach(async ({page}) => {
-      await page.getByRole('button', { name: 'Login' }).click()
-      await page.getByTestId('username').fill('davisdevelops')
-      await page.getByTestId('password').fill('rockyou')
-      await page.getByRole('button', { name: 'Login' }).click()
+      login(page,'davisdevelops','rockyou')
 
       //create a test blog
-      await page.getByRole('button',{ name:'Add blog' }).click()
-      await page.getByPlaceholder('blog title').fill('test blog')
-      await page.getByPlaceholder('author name').fill('playwright')
-      await page.getByPlaceholder('blog url').fill('playwright.com')
-      await page.getByRole('button',{ name:'Create' }).click()
+      createBlog(page,'test blog','playwright','playwright.com')
     })
 
     test('a new blog can be created', async ({ page }) => {
@@ -108,22 +94,18 @@ describe('Blog app', () => {
 
       //logout 
       await page.getByRole('button',{ name:'Logout' }).click()
-      await page.getByRole('button', { name: 'Login' }).click()
-      await page.getByTestId('username').fill('anonymous_user')
-      await page.getByTestId('password').fill('rockyou')
-      await page.getByRole('button', { name: 'Login' }).click()
+      //login as anonymous user
+      login(page,'anonymous_user','rockyou')
       //ensure delete button is not visble for anonymous user
+
       await page.getByRole('button', { name:'View' }).click()
       const deleteButtonInvisible = await page.isVisible('button:has-text("Delete")')
       expect(deleteButtonInvisible).toBe(false)
-    
+
     })
     test.only('ensures blogs are arranged in descending order according to likes', async ({ page }) => {
-      await page.getByRole('button', { name: 'Add blog' }).click()
-      await page.getByPlaceholder('blog title').fill('Most liked blog')
-      await page.getByPlaceholder('author name').fill('Test Author')
-      await page.getByPlaceholder('blog url').fill('http://test.com')
-      await page.getByRole('button', { name: 'Create' }).click()
+   
+      createBlog(page,'Most liked blog','Test Author','http://test.com')
 
      // Wait for the new blog to appear in the list
       await page.waitForSelector('.blog:has-text("Most liked blog")')
