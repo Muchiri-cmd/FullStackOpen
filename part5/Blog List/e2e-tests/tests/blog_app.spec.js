@@ -48,15 +48,15 @@ describe('Blog app', () => {
 
       //create a test blog
       await page.getByRole('button',{ name:'Add blog' }).click()
-      await page.getByPlaceholder('blog title').fill('a test blog created by playwright')
-      await page.getByPlaceholder('author name').fill('davisdevelops')
+      await page.getByPlaceholder('blog title').fill('test blog')
+      await page.getByPlaceholder('author name').fill('playwright')
       await page.getByPlaceholder('blog url').fill('playwright.com')
       await page.getByRole('button',{ name:'Create' }).click()
     })
 
     test('a new blog can be created', async ({ page }) => {
-      const blogs = await page.locator('.blog')
-      await expect(blogs).toContainText('a test blog created by playwright')
+      const blogs = page.locator('.blog')
+      await expect(blogs).toContainText('test blog')
     })
 
     test('blog can be liked',async ({ page }) => {
@@ -89,7 +89,7 @@ describe('Blog app', () => {
       page.getByRole('button', { name:'Delete'}).click()
 
       await expect(page.locator('text=Blog deleted successfully')).toBeVisible()
-      await expect(page.locator('.blog:has-text("a test blog created by playwright")')).not.toBeVisible()
+      await expect(page.locator('.blog:has-text("test blog")')).not.toBeVisible()
 
     })
     test('ensures only user who added the blog sees the blog delete button',async({page,request})=>{
@@ -118,6 +118,35 @@ describe('Blog app', () => {
       expect(deleteButtonInvisible).toBe(false)
     
     })
-    
-  })
+    test.only('ensures blogs are arranged in descending order according to likes', async ({ page }) => {
+      await page.getByRole('button', { name: 'Add blog' }).click()
+      await page.getByPlaceholder('blog title').fill('Most liked blog')
+      await page.getByPlaceholder('author name').fill('Test Author')
+      await page.getByPlaceholder('blog url').fill('http://test.com')
+      await page.getByRole('button', { name: 'Create' }).click()
+
+     // Wait for the new blog to appear in the list
+      await page.waitForSelector('.blog:has-text("Most liked blog")')
+
+      // Open blog details
+      await page.getByRole('button', { name: 'View' }).last().click()
+
+      // Wait for blog details to be visible
+      await page.waitForSelector('.blogDetails:visible')
+
+      // Add a like
+      const likeButton = page.locator('.blogDetails').last().getByRole('button', { name: 'like' })
+      await likeButton.click()
+
+      // Hide blog details
+      await page.getByRole('button', { name: 'hide' }).first().click();
+
+      // Wait for any potential reordering to occur
+      await page.waitForTimeout(1000);
+
+      // Check if the mostliked blog is at the top of the list
+      const firstBlog = page.locator('.blog').first();
+      await expect(firstBlog).toContainText('Most liked blog, Test Author');
+    })  
+  })   
 })
