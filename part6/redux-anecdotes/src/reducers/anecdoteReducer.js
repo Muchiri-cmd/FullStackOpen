@@ -19,7 +19,7 @@ const asObject = (anecdote) => {
 
 const initialState = anecdotesAtStart.map(asObject)
 
-export const createNote = (content) => {
+export const createAnecdote = (content) => {
   return {
     type:'NEW_ANECDOTE',
     payload:{
