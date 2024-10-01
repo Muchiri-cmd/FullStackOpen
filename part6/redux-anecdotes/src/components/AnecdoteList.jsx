@@ -3,7 +3,12 @@ import VoteButton from './VoteButton'
 
 
 const AnecdoteList = () => {
-  const anecdotes = useSelector(state => state)
+  const anecdotes = useSelector(state => {
+    if (state.filter === 'all'){
+      return state.anecdotes
+    }
+    return state.anecdotes.filter(anecdote => anecdote.content.includes(state.filter))
+  })
   const sortedAnecdotes = [...anecdotes].sort((a,b) => b.votes - a.votes )
   
   return (
