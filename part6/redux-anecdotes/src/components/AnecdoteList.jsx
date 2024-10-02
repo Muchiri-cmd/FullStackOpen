@@ -1,7 +1,6 @@
 import { useSelector } from 'react-redux'
 import VoteButton from './VoteButton'
 
-
 const AnecdoteList = () => {
   const anecdotes = useSelector(state => {
     if (state.filter === 'all'){

@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit"
+import { setNotification,removeNotification } from "./notificationReducer"
 
 const anecdotesAtStart = [
   'If it hurts, do it more often',
@@ -41,6 +42,11 @@ const anecdoteSlice = createSlice({
         votes:anecdoteToVote.votes + 1
       }
 
+      setNotification(`You voted ${anecdoteToVote.content}`)
+      setTimeout(() => {
+        removeNotification()
+      },5000)
+      
       return state.map(anecdote => 
         anecdote.id !== id ? anecdote : updatedAnecdote
       ) 

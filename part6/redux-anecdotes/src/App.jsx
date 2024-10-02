@@ -1,12 +1,10 @@
-
-import AnecdoteForm from './components/AnecdoteForm'
-import AnecdoteList from './components/AnecdoteList'
-import Search from './components/Search'
+import { AnecdoteForm , AnecdoteList , Search, Notification } from './components';
 
 const App = () => {
   return (
     <div>
       <h1>Anecdotes</h1>  
+      <Notification/>
       <Search/>
       <AnecdoteList/>
       <AnecdoteForm/>
