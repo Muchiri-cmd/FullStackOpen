@@ -13,4 +13,15 @@ const createNew = async (content) => {
   return response.data
 }
 
-export default { fetch,createNew }
+const addVote = async (id) => {
+  const anecdoteToVote = await axios.get(`${baseUrl}/${id}`);
+
+  const updatedAnecdote = {
+    ...anecdoteToVote.data,
+    votes: anecdoteToVote.data.votes + 1
+  }
+  const response = await axios.put(`${baseUrl}/${id}`,updatedAnecdote)
+  return response.data
+}
+
+export default { fetch,createNew,addVote }
