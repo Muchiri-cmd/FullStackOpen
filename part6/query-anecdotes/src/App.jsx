@@ -1,20 +1,15 @@
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import AnecdoteForm from './components/AnecdoteForm'
 import Notification from './components/Notification'
 import { fetchAnecdotes } from './requests/request'
 
 const App = () => {
+ 
 
   const handleVote = (anecdote) => {
     console.log('vote')
   }
-  // const anecdotes = [
-  //   {
-  //     "content": "If it hurts, do it more often",
-  //     "id": "47145",
-  //     "votes": 0
-  //   },
-  // ]
+
   const {isPending,isError,data,error} = useQuery({
     queryKey:['anecdotes'],
     queryFn:fetchAnecdotes,
