@@ -5,6 +5,8 @@ import blogService from "./services/blogs";
 import loginService from "./services/login";
 import BlogForm from "./components/BlogForm";
 import Toggle from "./components/Toggle";
+import { useDispatch } from "react-redux";
+import { setNotification } from "./actions/notification";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -19,6 +21,8 @@ const App = () => {
   const [url, setUrl] = useState("");
 
   const blogFormRef = useRef();
+
+  const dispatch = useDispatch()
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -44,10 +48,8 @@ const App = () => {
       setUsername("");
       setPassword("");
     } catch (error) {
-      setErrorMessage("wrong username or password");
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
+      dispatch(setNotification(null,"wrong username or password"))
+      // setErrorMessage("wrong username or password");
     }
   };
 
@@ -68,12 +70,11 @@ const App = () => {
       setTitle("");
       setAuthor("");
       setUrl("");
-      setMessage(`a new blog ${title} by ${author} added`);
-      setTimeout(() => {
-        setMessage(null);
-      }, 2000);
+      dispatch(setNotification(`a new blog ${title} by ${author} added`))
+      // setMessage(`a new blog ${title} by ${author} added`);
     } catch (error) {
-      setErrorMessage(errorMessage);
+      // setErrorMessage(errorMessage);
+      dispatch(setNotification(null,errorMessage))
     }
   };
 
@@ -88,10 +89,8 @@ const App = () => {
       setBlogs(blogs.map((b) => (b.id !== blog.id ? b : returnedBlog)));
     } catch (error) {
       console.error(error);
-      setErrorMessage("Error updating likes");
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 2000);
+      dispatch(setNotification(null,"Error updating likes"))
+      // setErrorMessage("Error updating likes");
     }
   };
 
@@ -103,16 +102,12 @@ const App = () => {
       try {
         await blogService.remove(id);
         setBlogs(blogs.filter((b) => b.id !== id));
-        setMessage("Blog deleted successfully");
-        setTimeout(() => {
-          setMessage(null);
-        }, 2500);
+        dispatch(setNotification("Blog deleted successfully"))
+        // setMessage("Blog deleted successfully");
       } catch (error) {
         console.error(error);
-        setErrorMessage("Error deleting blog");
-        setTimeout(() => {
-          setErrorMessage(null);
-        }, 2500);
+        dispatch(null,"Error deleting blog")
+        // setErrorMessage("Error deleting blog");
       }
     } else return;
   };

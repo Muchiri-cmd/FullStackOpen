@@ -1,4 +1,8 @@
-const Notification = ({ message, error }) => {
+import { useSelector } from "react-redux";
+
+const Notification = () => {
+  const {message,error} = useSelector((state) => state.notifications)
+
   const msgBoxStyles = {
     color: "green",
     fontSize: "13px",
