@@ -7,12 +7,13 @@ import BlogForm from './components/BlogForm'
 import Toggle from './components/Toggle'
 import { useNotification } from './context/notificationContext'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useUser } from './context/userContext'
 
 const App = () => {
   // const [blogs, setBlogs] = useState([])
   const [username,setUsername] = useState('')
   const [password,setPassword] = useState('')
-  const [user,setUser] = useState(null)
+  const { state: userState, dispatch } = useUser()
   const [errorMessage, setErrorMessage] = useState(null)
   const [message,setMessage] = useState(null)
 
@@ -28,10 +29,10 @@ const App = () => {
     const authenticatedUser = window.localStorage.getItem('authenticatedUser')
     if(authenticatedUser){
       const user = JSON.parse(authenticatedUser)
-      setUser(user)
+      dispatch({ type: 'LOGIN', payload: user })
       blogService.setToken(user.token)
     }
-  },[])
+  },[dispatch])
 
   const BlogList = () => {
     const queryClient = useQueryClient()
@@ -98,7 +99,7 @@ const App = () => {
           <Blog key={blog.id} blog={blog}
             handleAddLike={() => handleAddLike(blog)}
             handleDelete={() => handleDelete(blog.id)}
-            currentUser = {user}
+            currentUser = {userState.user}
           />
         )}
       </>
@@ -112,7 +113,7 @@ const App = () => {
       window.localStorage.setItem('authenticatedUser',JSON.stringify(user))
       //set token after login
       blogService.setToken(user.token)
-      setUser(user)
+      dispatch({ type: 'LOGIN', payload: user })
       setUsername('')
       setPassword('')
     } catch(error){
@@ -121,7 +122,7 @@ const App = () => {
   }
 
   const handleLogout = (event) => {
-    setUser(null)
+    dispatch({ type: 'LOGOUT' })
     window.localStorage.removeItem('authenticatedUser')
     window.localStorage.clear()
   }
@@ -131,7 +132,7 @@ const App = () => {
     try{
       const blog = await blogService.create({ title,author,url })
       //set blog user to one who created blog
-      blog.user = user
+      blog.user = userState.user
       blogFormRef.current.toggleVisibility()
       setTitle('')
       setAuthor('')
@@ -176,10 +177,10 @@ const App = () => {
     <div>
       <h1>blogs</h1>
       <Notification message={state.message} error={state.error}/>
-      {user===null && loginForm}
-      {user !== null &&
+      {userState.user===null && loginForm}
+      {userState.user !== null &&
         <>
-          {user.name} logged in
+          {userState.user.name} logged in
           <button  onClick={handleLogout}> Logout</button>
 
           <h3>Create New</h3>
