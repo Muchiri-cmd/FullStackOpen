@@ -6,9 +6,10 @@ import loginService from './services/login'
 import BlogForm from './components/BlogForm'
 import Toggle from './components/Toggle'
 import { useNotification } from './context/notificationContext'
+import { useQuery } from '@tanstack/react-query'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
+  // const [blogs, setBlogs] = useState([])
   const [username,setUsername] = useState('')
   const [password,setPassword] = useState('')
   const [user,setUser] = useState(null)
@@ -24,11 +25,6 @@ const App = () => {
   const { state, setNotification } = useNotification()
 
   useEffect(() => {
-    blogService.getAll()
-      .then(blogs => setBlogs(blogs))
-  }, [])
-
-  useEffect(() => {
     const authenticatedUser = window.localStorage.getItem('authenticatedUser')
     if(authenticatedUser){
       const user = JSON.parse(authenticatedUser)
@@ -36,6 +32,62 @@ const App = () => {
       blogService.setToken(user.token)
     }
   },[])
+
+  const BlogList = () => {
+    const { data:blogs,error,isLoading } = useQuery({
+      queryKey:['blogs'],
+      queryFn:blogService.getAll,
+      onError:() => {
+        setNotification(null,'Error loading blogs!')
+      }
+    })
+
+    if (isLoading) return <div>Loading...</div>
+    if (error) return <div>Error loading blogs!</div>
+
+    const sortedBlogs = [...blogs].sort((a,b) => b.likes - a.likes)
+
+    const handleDelete = async(id) => {
+      const blog = blogs.find(blog => blog.id === id)
+      const confirm = window.confirm(`Remove ${blog.title} by ${blog.author}?`)
+
+      if (confirm){
+        try {
+          await blogService.remove(id)
+          setNotification('Blog deleted successfully')
+        }catch(error){
+          setNotification(null,'Error deleting blog')
+        }
+      }
+      else return
+    }
+
+    const handleAddLike = async (blog) => {
+      try{
+        const updatedBlog = {
+          ...blog,
+          likes:blog.likes + 1,
+          user:blog.user.id
+        }
+        const returnedBlog = await blogService.like(blog.id,updatedBlog)
+      }catch(error){
+        setNotification(null,'Error updating likes')
+      }
+    }
+
+
+    return(
+      <>
+        {sortedBlogs.map(blog =>
+          <Blog key={blog.id} blog={blog}
+            handleAddLike={() => handleAddLike(blog)}
+            handleDelete={() => handleDelete(blog.id)}
+            currentUser = {user}
+          />
+        )}
+      </>
+    )
+  }
 
   const handleLogin = async(event) => {
     event.preventDefault()
@@ -65,7 +117,6 @@ const App = () => {
       //set blog user to one who created blog
       blog.user = user
       blogFormRef.current.toggleVisibility()
-      setBlogs(blogs.concat(blog))
       setTitle('')
       setAuthor('')
       setUrl('')
@@ -75,35 +126,7 @@ const App = () => {
     }
   }
 
-  const handleAddLike = async (blog) => {
-    try{
-      const updatedBlog = {
-        ...blog,
-        likes:blog.likes + 1,
-        user:blog.user.id
-      }
-      const returnedBlog = await blogService.like(blog.id,updatedBlog)
-      setBlogs(blogs.map(b => ( b.id !== blog.id ? b : returnedBlog )))
-    }catch(error){
-      setNotification(null,'Error updating likes')
-    }
-  }
 
-  const handleDelete = async(id) => {
-    const blog = blogs.find(blog => blog.id === id)
-    const confirm = window.confirm(`Remove ${blog.title} by ${blog.author}?`)
-
-    if (confirm){
-      try {
-        await blogService.remove(id)
-        setBlogs(blogs.filter(b => b.id !== id))
-        setNotification('Blog deleted successfully')
-      }catch(error){
-        setNotification(null,'Error deleting blog')
-      }
-    }
-    else return
-  }
   const blogForm = () => {
     return (
       <Toggle buttonLabel="Add blog" ref={blogFormRef}>
@@ -133,8 +156,6 @@ const App = () => {
     </form>
   )
 
-
-  const sortedBlogs = [...blogs].sort((a,b) => b.likes - a.likes)
   return (
     <div>
       <h1>blogs</h1>
@@ -147,13 +168,7 @@ const App = () => {
 
           <h3>Create New</h3>
           {blogForm()}
-          {sortedBlogs.map(blog =>
-            <Blog key={blog.id} blog={blog}
-              handleAddLike={() => handleAddLike(blog)}
-              handleDelete={() => handleDelete(blog.id)}
-              currentUser = {user}
-            />
-          )}
+          <BlogList/>
         </>
       }
 
