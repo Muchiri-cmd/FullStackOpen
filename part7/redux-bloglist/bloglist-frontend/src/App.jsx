@@ -6,15 +6,16 @@ import loginService from "./services/login";
 import BlogForm from "./components/BlogForm";
 import Toggle from "./components/Toggle";
 import { useDispatch,useSelector } from "react-redux";
-import { setNotification } from "./actions/notification";
-import { setBlogs,createBlog, likeBlog, deleteBlog } from "./reducers/blogReducer";
-import { update } from "lodash";
+import { setNotification } from "./actions/notificationActions";
+import { setBlogs,createBlog, likeBlog, deleteBlog } from "./actions/blogActions";
+import { setUser,logoutUser } from "./actions/userActions";
+
 
 const App = () => {
   // const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [user, setUser] = useState(null);
+  // const [user, setUser] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const [message, setMessage] = useState(null);
 
@@ -35,7 +36,7 @@ const App = () => {
     const authenticatedUser = window.localStorage.getItem("authenticatedUser");
     if (authenticatedUser) {
       const user = JSON.parse(authenticatedUser);
-      setUser(user);
+      dispatch(setUser(user))
       blogService.setToken(user.token);
     }
   }, []);
@@ -47,7 +48,7 @@ const App = () => {
       window.localStorage.setItem("authenticatedUser", JSON.stringify(user));
       //set token after login
       blogService.setToken(user.token);
-      setUser(user);
+      dispatch(setUser(user))
       setUsername("");
       setPassword("");
     } catch (error) {
@@ -57,7 +58,7 @@ const App = () => {
   };
 
   const handleLogout = (event) => {
-    setUser(null);
+    dispatch(logoutUser());
     window.localStorage.removeItem("authenticatedUser");
     window.localStorage.clear();
   };
@@ -156,7 +157,8 @@ const App = () => {
   );
 
   const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes);
-  
+  const user = useSelector((state) => state.user)
+
   return (
     <div>
       <h1>blogs</h1>
