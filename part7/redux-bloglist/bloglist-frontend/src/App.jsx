@@ -5,11 +5,12 @@ import blogService from "./services/blogs";
 import loginService from "./services/login";
 import BlogForm from "./components/BlogForm";
 import Toggle from "./components/Toggle";
-import { useDispatch } from "react-redux";
+import { useDispatch,useSelector } from "react-redux";
 import { setNotification } from "./actions/notification";
+import { setBlogs,createBlog } from "./reducers/blogReducer";
 
 const App = () => {
-  const [blogs, setBlogs] = useState([]);
+  // const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
@@ -22,10 +23,11 @@ const App = () => {
 
   const blogFormRef = useRef();
 
+  const blogs = useSelector((state) => state.blogs)
   const dispatch = useDispatch()
 
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs));
+    blogService.getAll().then((blogs) => dispatch(setBlogs(blogs)));
   }, []);
 
   useEffect(() => {
@@ -66,7 +68,8 @@ const App = () => {
       //set blog user to one who created blog
       blog.user = user;
       blogFormRef.current.toggleVisibility();
-      setBlogs(blogs.concat(blog));
+      // setBlogs(blogs.concat(blog));
+      dispatch(createBlog(blog));
       setTitle("");
       setAuthor("");
       setUrl("");
@@ -153,6 +156,7 @@ const App = () => {
   );
 
   const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes);
+  
   return (
     <div>
       <h1>blogs</h1>
@@ -164,15 +168,23 @@ const App = () => {
           <button onClick={handleLogout}> Logout</button>
           <h3>Create New</h3>
           {blogForm()}
-          {sortedBlogs.map((blog) => (
-            <Blog
-              key={blog.id}
-              blog={blog}
-              handleAddLike={() => handleAddLike(blog)}
-              handleDelete={() => handleDelete(blog.id)}
-              currentUser={user}
-            />
-          ))}
+
+          {blogs.length > 0 ? (
+            sortedBlogs.map((blog) => (
+              <Blog
+                key={blog.id}
+                blog={blog}
+                handleAddLike={() => handleAddLike(blog)}
+                handleDelete={() => handleDelete(blog.id)}
+                currentUser={user}
+              />
+            ))
+          ) : (
+            <div>loading ...</div>
+          )}
+         
+          
+         
         </>
       )}
     </div>
