@@ -7,7 +7,8 @@ import BlogForm from "./components/BlogForm";
 import Toggle from "./components/Toggle";
 import { useDispatch,useSelector } from "react-redux";
 import { setNotification } from "./actions/notification";
-import { setBlogs,createBlog } from "./reducers/blogReducer";
+import { setBlogs,createBlog, likeBlog, deleteBlog } from "./reducers/blogReducer";
+import { update } from "lodash";
 
 const App = () => {
   // const [blogs, setBlogs] = useState([]);
@@ -74,9 +75,7 @@ const App = () => {
       setAuthor("");
       setUrl("");
       dispatch(setNotification(`a new blog ${title} by ${author} added`))
-      // setMessage(`a new blog ${title} by ${author} added`);
     } catch (error) {
-      // setErrorMessage(errorMessage);
       dispatch(setNotification(null,errorMessage))
     }
   };
@@ -89,11 +88,11 @@ const App = () => {
         user: blog.user.id,
       };
       const returnedBlog = await blogService.like(blog.id, updatedBlog);
-      setBlogs(blogs.map((b) => (b.id !== blog.id ? b : returnedBlog)));
+      dispatch(likeBlog(returnedBlog))
     } catch (error) {
       console.error(error);
       dispatch(setNotification(null,"Error updating likes"))
-      // setErrorMessage("Error updating likes");
+  
     }
   };
 
@@ -104,7 +103,8 @@ const App = () => {
     if (confirm) {
       try {
         await blogService.remove(id);
-        setBlogs(blogs.filter((b) => b.id !== id));
+        // setBlogs(blogs.filter((b) => b.id !== id));
+        dispatch(deleteBlog(blog.id))
         dispatch(setNotification("Blog deleted successfully"))
         // setMessage("Blog deleted successfully");
       } catch (error) {
