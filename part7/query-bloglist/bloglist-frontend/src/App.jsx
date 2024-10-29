@@ -6,7 +6,7 @@ import loginService from './services/login'
 import BlogForm from './components/BlogForm'
 import Toggle from './components/Toggle'
 import { useNotification } from './context/notificationContext'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 const App = () => {
   // const [blogs, setBlogs] = useState([])
@@ -34,11 +34,37 @@ const App = () => {
   },[])
 
   const BlogList = () => {
+    const queryClient = useQueryClient()
+
     const { data:blogs,error,isLoading } = useQuery({
       queryKey:['blogs'],
       queryFn:blogService.getAll,
       onError:() => {
         setNotification(null,'Error loading blogs!')
+      }
+    })
+
+    const likeMutation = useMutation({
+      mutationFn: (data) => blogService.like(data),
+      onSuccess: (returnedBlog) => {
+        queryClient.setQueryData(['blogs'], (prev) =>
+          prev.map((blog) => (blog.id === returnedBlog.id ? returnedBlog : blog))
+        )
+        setNotification(`You liked "${returnedBlog.title}" by ${returnedBlog.author}`, null)
+      },
+      onError: () => {
+        setNotification(null, 'Error updating like')
+      },
+    })
+
+    const deleteMutation = useMutation({
+      mutationFn:blogService.remove,
+      onSuccess:() => {
+        queryClient.invalidateQueries(['blogs'])
+        setNotification('Blog deleted successfully',null)
+      },
+      onError:() => {
+        setNotification(null,'Error deleting blog')
       }
     })
 
@@ -52,27 +78,17 @@ const App = () => {
       const confirm = window.confirm(`Remove ${blog.title} by ${blog.author}?`)
 
       if (confirm){
-        try {
-          await blogService.remove(id)
-          setNotification('Blog deleted successfully')
-        }catch(error){
-          setNotification(null,'Error deleting blog')
-        }
+        deleteMutation.mutate(id)
       }
-      else return
     }
 
     const handleAddLike = async (blog) => {
-      try{
-        const updatedBlog = {
-          ...blog,
-          likes:blog.likes + 1,
-          user:blog.user.id
-        }
-        const returnedBlog = await blogService.like(blog.id,updatedBlog)
-      }catch(error){
-        setNotification(null,'Error updating likes')
+      const updatedBlog = {
+        ...blog,
+        likes:blog.likes + 1,
+        user:blog.user.id
       }
+      likeMutation.mutate({ id:blog.id,updatedBlog })
     }
 
 
