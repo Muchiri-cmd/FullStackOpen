@@ -9,7 +9,9 @@ import { useDispatch,useSelector } from "react-redux";
 import { setNotification } from "./actions/notificationActions";
 import { setBlogs,createBlog, likeBlog, deleteBlog } from "./actions/blogActions";
 import { setUser,logoutUser } from "./actions/userActions";
-
+import { BrowserRouter as Router, Routes , Route , Link } from 'react-router-dom'
+import Users from "./components/Users";
+import User from './components/User'
 
 const App = () => {
   // const [blogs, setBlogs] = useState([]);
@@ -160,36 +162,53 @@ const App = () => {
   const user = useSelector((state) => state.user)
 
   return (
-    <div>
-      <h1>blogs</h1>
+    <Router>
+      <div className='container'>
+      <h1>
+        <Link to="/">Blogs</Link>
+      </h1>
       <Notification message={message} error={errorMessage} />
       {user === null && loginForm}
       {user !== null && (
         <>
           {user.name} logged in
           <button onClick={handleLogout}> Logout</button>
-          <h3>Create New</h3>
-          {blogForm()}
-
-          {blogs.length > 0 ? (
-            sortedBlogs.map((blog) => (
-              <Blog
-                key={blog.id}
-                blog={blog}
-                handleAddLike={() => handleAddLike(blog)}
-                handleDelete={() => handleDelete(blog.id)}
-                currentUser={user}
-              />
-            ))
-          ) : (
-            <div>loading ...</div>
-          )}
-         
           
-         
+            <div>
+              <Link to="/users">users</Link>
+            </div>
+            <Routes>
+              <Route path="/users" element={<Users/>}></Route>
+              <Route
+                path ="/"
+                element={
+                  <>
+                  <h3>Create New</h3>
+                  {blogForm()}
+                  {blogs.length > 0 ? (
+                  sortedBlogs.map((blog) => (
+                    <Blog
+                      key={blog.id}
+                      blog={blog}
+                      handleAddLike={() => handleAddLike(blog)}
+                      handleDelete={() => handleDelete(blog.id)}
+                      currentUser={user}
+                    />
+                  ))
+                ) : (
+                  <div>loading ...</div>
+                )}
+                  </>
+                  
+                }
+              ></Route>
+              <Route path="/:id" element={<User />} />
+            </Routes>
         </>
       )}
     </div>
+    </Router>
+   
   );
 };
 
