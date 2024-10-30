@@ -14,7 +14,7 @@ const Notification = () => {
     alignItems: "center",
     justifyContent: "center",
     margin: "auto",
-    marginBottom: "20px",
+    marginBottom: "25px",
     border: "1px solid green",
     boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
     transition: "all 0.3s ease",

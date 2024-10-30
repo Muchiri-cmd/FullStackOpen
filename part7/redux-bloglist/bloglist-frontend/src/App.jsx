@@ -13,6 +13,7 @@ import { BrowserRouter as Router, Routes , Route , Link ,useNavigate} from 'reac
 import Users from "./components/Users";
 import User from './components/User'
 import BlogDetail from "./components/BlogDetail";
+import Nav from "./components/Navigation";
 
 const App = () => {
   
@@ -167,19 +168,11 @@ const App = () => {
 
   return (
     <div className='container'>
-      <h1>
-        <Link to="/">Blogs</Link>
-      </h1>
+      <Nav user={user} handleLogout={handleLogout}/>
       <Notification message={message} error={errorMessage} />
       {user === null && loginForm}
       {user !== null && (
         <>
-          {user.name} logged in
-          <button onClick={handleLogout}> Logout</button>
-          
-            <div>
-              <Link to="/users">users</Link>
-            </div>
             <Routes>
               <Route path="/users" element={<Users/>}></Route>
               <Route

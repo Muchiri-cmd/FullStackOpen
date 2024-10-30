@@ -13,7 +13,6 @@ const BlogDetail = ({handleAddLike,currentUser,handleDelete}) => {
     const fetchUser = async () => {
       if (blog && blog.user) { 
         try {
-          console.log(blog.user.id)
           const userData = await userService.getUserById(blog.user.id)
           setUser(userData);
         } catch (error) {
@@ -37,6 +36,7 @@ const BlogDetail = ({handleAddLike,currentUser,handleDelete}) => {
         </h1>
         <a href={blog.url}>{blog.url}</a>
         <div>
+          <br />
           <p>
             likes <span className="likes-count">{blog.likes}</span>
             <button onClick={() => handleAddLike(blog)}>like</button>
