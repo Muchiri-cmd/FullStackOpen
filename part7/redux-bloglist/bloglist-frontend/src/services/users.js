@@ -7,7 +7,7 @@ const allUsers = () => {
 };
 
 const getUserById = async(id) => {
-  const response = await axios.get(`${baseURL}/${id}`)
+  const response = await axios.get(`${baseURL}/${id}`);
   return response.data
 }
 

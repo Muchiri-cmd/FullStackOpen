@@ -5,7 +5,15 @@ const blogReducer = (state = [],action) => {
     case 'SET_BLOGS':
       return action.payload;
     case 'LIKE_BLOG':
-     return state.map((blog) => blog.id !== action.payload.id ? blog : action.payload)
+      return state.map((blog) => {
+        if (blog.id === action.payload.id) {
+          return {
+            ...blog,
+            likes: action.payload.likes, 
+          };
+        }
+        return blog; 
+      });
     case 'DELETE_BLOG':
       return state.filter((blog) => blog.id !== action.payload)
     default:

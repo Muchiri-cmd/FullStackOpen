@@ -9,15 +9,15 @@ import { useDispatch,useSelector } from "react-redux";
 import { setNotification } from "./actions/notificationActions";
 import { setBlogs,createBlog, likeBlog, deleteBlog } from "./actions/blogActions";
 import { setUser,logoutUser } from "./actions/userActions";
-import { BrowserRouter as Router, Routes , Route , Link } from 'react-router-dom'
+import { BrowserRouter as Router, Routes , Route , Link ,useNavigate} from 'react-router-dom'
 import Users from "./components/Users";
 import User from './components/User'
+import BlogDetail from "./components/BlogDetail";
 
 const App = () => {
-  // const [blogs, setBlogs] = useState([]);
+  
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  // const [user, setUser] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const [message, setMessage] = useState(null);
 
@@ -29,6 +29,8 @@ const App = () => {
 
   const blogs = useSelector((state) => state.blogs)
   const dispatch = useDispatch()
+  const navigate = useNavigate(); 
+  
 
   useEffect(() => {
     blogService.getAll().then((blogs) => dispatch(setBlogs(blogs)));
@@ -100,6 +102,7 @@ const App = () => {
   };
 
   const handleDelete = async (id) => {
+  
     const blog = blogs.find((blog) => blog.id === id);
     const confirm = window.confirm(`Remove ${blog.title} by ${blog.author}?`);
 
@@ -109,6 +112,7 @@ const App = () => {
         // setBlogs(blogs.filter((b) => b.id !== id));
         dispatch(deleteBlog(blog.id))
         dispatch(setNotification("Blog deleted successfully"))
+        navigate('/'); 
         // setMessage("Blog deleted successfully");
       } catch (error) {
         console.error(error);
@@ -162,8 +166,7 @@ const App = () => {
   const user = useSelector((state) => state.user)
 
   return (
-    <Router>
-      <div className='container'>
+    <div className='container'>
       <h1>
         <Link to="/">Blogs</Link>
       </h1>
@@ -190,9 +193,7 @@ const App = () => {
                     <Blog
                       key={blog.id}
                       blog={blog}
-                      handleAddLike={() => handleAddLike(blog)}
-                      handleDelete={() => handleDelete(blog.id)}
-                      currentUser={user}
+                      
                     />
                   ))
                 ) : (
@@ -202,12 +203,18 @@ const App = () => {
                   
                 }
               ></Route>
-              <Route path="/:id" element={<User />} />
+              <Route path="/users/:id" element={<User />} />
+              <Route path="/blogs/:id" element={
+                <BlogDetail 
+                  handleAddLike={handleAddLike}
+                  handleDelete={handleDelete}
+                  currentUser={user}
+              />} />
             </Routes>
         </>
       )}
     </div>
-    </Router>
+   
    
   );
 };
