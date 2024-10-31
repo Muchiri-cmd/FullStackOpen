@@ -2,6 +2,7 @@ import { useEffect,useState } from "react"
 import { useSelector } from "react-redux"
 import { useParams } from "react-router-dom"
 import userService from "../services/users"
+import CommentForm from "./commentForm"
 
 const BlogDetail = ({handleAddLike,currentUser,handleDelete}) => {
   const { id } = useParams()
@@ -54,6 +55,18 @@ const BlogDetail = ({handleAddLike,currentUser,handleDelete}) => {
           )}
        
       
+        <div>
+          <br />
+          <h4>Comments</h4>
+          <CommentForm blogID={blog.id}/>
+          <ul>
+            {blog.comments.map((comment,index) => (
+              <li key={index}>{comment}</li>
+            ))}
+          </ul>
+          
+
+        </div>
     </div>
   )
 }

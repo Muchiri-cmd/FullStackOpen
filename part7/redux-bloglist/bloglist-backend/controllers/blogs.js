@@ -7,6 +7,19 @@ blogsRouter.get('/', async (request, response) => {
   response.json(blogs)
 })
 
+blogsRouter.get('/:id', async (request, response) => {
+  const { id } = request.params
+  try {
+    const blog = await Blog.findById(id).populate('user', 'username')
+    if (!blog) return response.status(404).json({ error: 'Blog not found' })
+
+    response.json(blog)
+  } catch (error) {
+    console.error(error)
+    response.status(500).json({ error: 'Internal server error' })
+  }
+})
+
 blogsRouter.post('/',async (request, response) => {
   const user = await request.user
   const { title, author, url , likes } = request.body
@@ -52,5 +65,32 @@ blogsRouter.delete('/:id', async (request, response) => {
   await Blog.findByIdAndDelete(id)
   response.status(204).end()
 })
+
+blogsRouter.post('/:id/comments',async(request,response) => {
+  const { id } = request.params
+  const { comment } = request.body
+
+  if (!comment || comment.trim() === ''){
+    return response.status(400).json({ error:'Comment cannot be empty' })
+  }
+
+  try{
+    const updatedBlogEntry = await Blog.findByIdAndUpdate(
+      id,
+      { $push : { comments:comment } },
+      { new:true , runValidators:true, context:'query' }
+    )
+
+    if (!updatedBlogEntry){
+      return response.status(404).json({ error:'Blog not found' })
+    }
+    response.json(updatedBlogEntry)
+  }catch(error){
+    console.error(error)
+    response.status(500).json({ error:'An error occured while adding comments' })
+  }
+})
+
+
 
 module.exports = blogsRouter

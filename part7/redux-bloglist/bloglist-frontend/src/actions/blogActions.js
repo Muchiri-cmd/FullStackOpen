@@ -29,3 +29,10 @@ export const deleteBlog = (id) => {
     payload:id,
   }
 }
+
+export const addComment = ( id, comments ) => {
+  return {
+    type:'ADD_COMMENT',
+    payload:{ id, comments }
+  }
+}

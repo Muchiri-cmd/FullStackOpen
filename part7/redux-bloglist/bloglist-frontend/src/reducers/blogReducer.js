@@ -16,6 +16,12 @@ const blogReducer = (state = [],action) => {
       });
     case 'DELETE_BLOG':
       return state.filter((blog) => blog.id !== action.payload)
+    case 'ADD_COMMENT':
+      return state.map((blog) => 
+        blog.id === action.payload.id
+      ? { ...blog, comments:action.payload.comments }
+      : blog
+      )
     default:
       return state
   }
