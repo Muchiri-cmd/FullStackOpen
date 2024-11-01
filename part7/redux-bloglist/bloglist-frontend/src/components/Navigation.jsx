@@ -1,33 +1,41 @@
 import { Navbar, Nav } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
-const Navigation = ({ user , handleLogout }) => {
-  const padding = {
+const Navigation = ({ user, handleLogout }) => {
+  const link = {
     padding: '10px',
+    textDecoration: 'none',
+    color: 'white',
   };
+  
   const navbarStyle = {
-    backgroundColor: '#808080', 
-    marginBottom:'10px',
+    marginBottom: '10px',
   };
 
   return (
-    <Navbar collapseOnSelect expand="lg" style={navbarStyle} >
+    <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark" style={navbarStyle}>
       <Navbar.Toggle aria-controls="responsive-navbar-nav" />
       <Navbar.Collapse id="responsive-navbar-nav">
+      
         <Nav className="me-auto">
           <Nav.Link as="span">
-            <Link style={padding} to="/">Blogs</Link>
+            <Link style={link} to="/">Blogs</Link>
           </Nav.Link>
           <Nav.Link as="span">
-            <Link style={padding} to="/users">Users</Link>
+            <Link style={link} to="/users">Users</Link>
           </Nav.Link>
+        </Nav>
+        
+        
+        <Nav className="ms-auto">
           <Nav.Link as="span">
-            {user !== null && <>
-              {user.name} logged in
-              <button onClick={handleLogout}> Logout</button>
-            </> }
+            {user && (
+              <>
+                {user.name} logged in
+                <button onClick={handleLogout} style={{ marginLeft: '10px' }}>Logout</button>
+              </>
+            )}
           </Nav.Link>
-       
         </Nav>
       </Navbar.Collapse>
     </Navbar>

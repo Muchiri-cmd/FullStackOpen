@@ -3,11 +3,12 @@ import { useSelector } from "react-redux"
 import { useParams } from "react-router-dom"
 import userService from "../services/users"
 import CommentForm from "./commentForm"
+import { Button } from 'react-bootstrap'
 
 const BlogDetail = ({handleAddLike,currentUser,handleDelete}) => {
   const { id } = useParams()
   const blog = useSelector((state) => state.blogs.find((b) => b.id === id));
- 
+  
   const [user, setUser] = useState(null); 
 
   useEffect(() => {
@@ -30,37 +31,34 @@ const BlogDetail = ({handleAddLike,currentUser,handleDelete}) => {
   }
 
   return (
-    <div>
-      <br />
-        <h1>
+    <div className='container'>
+        <h2 className='mb-2'>
           {blog.title}
-        </h1>
-        <a href={blog.url}>{blog.url}</a>
-        <div>
-          <br />
-          <p>
-            likes <span className="likes-count">{blog.likes}</span>
-            <button onClick={() => handleAddLike(blog)}>like</button>
+        </h2>
+        <a href={blog.url} className='text-primary' target="_blank" rel="noopener noreferrer">{blog.url}</a>
+        <div className="mt-1">
+          <p className="d-flex align-items-center">
+            likes <span className="likes-count mx-1">{blog.likes}</span>
+            <Button onClick={() => handleAddLike(blog)}>like</Button>
           </p>
         </div>
         
        
-        {blog.user && blog.user.username &&  <p>Added by {blog.user.username}</p> }
+        {blog.user && blog.user.username &&  <p className="text-muted">Added by {blog.user.username}</p> }
         {currentUser &&
           blog.user &&
           currentUser.username === blog.user.username && (
             <>
-              <button onClick={() => handleDelete(blog.id)}>Delete</button>
+              <Button onClick={() => handleDelete(blog.id)} className="btn-danger">Delete</Button>
             </>
           )}
        
       
-        <div>
-          <br />
-          <h4>Comments</h4>
+        <div className="mt-4">
           <CommentForm blogID={blog.id}/>
-          <ul>
-            {blog.comments.map((comment,index) => (
+          <h4>Comments</h4>
+          <ul className="mt-3">
+            {blog.comments.slice().reverse().map((comment,index) => (
               <li key={index}>{comment}</li>
             ))}
           </ul>

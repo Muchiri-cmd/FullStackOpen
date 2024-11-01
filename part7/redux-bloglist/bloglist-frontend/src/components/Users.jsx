@@ -31,17 +31,22 @@ const Users = () => {
           </tr>
         </thead>
         <tbody>
-          {users.map(user => 
+          {users.length > 0 ? (
+            users.map(user => 
             <tr key={user.id}>
               <td>
-                <Link to={`/users/${user.id}`}>{user.name}</Link>
+                <Link to={`/users/${user.id}`} className='text-decoration-none'>{user.name}</Link>
               </td>
               <td>
                 {user.blogs.length}
               </td>
-
             </tr>
+            )
+          )
+          :(
+            <tr><td>Loading...</td><td>Please wait..</td></tr>
           )}
+        
         </tbody>
 
       </Table>

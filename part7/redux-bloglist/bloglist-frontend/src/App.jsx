@@ -14,6 +14,7 @@ import Users from "./components/Users";
 import User from './components/User'
 import BlogDetail from "./components/BlogDetail";
 import Nav from "./components/Navigation";
+import Home from './components/Home'
 
 const App = () => {
   
@@ -56,6 +57,7 @@ const App = () => {
       dispatch(setUser(user))
       setUsername("");
       setPassword("");
+      dispatch(setNotification(`Successfully logged in as ${user.username}`))
     } catch (error) {
       dispatch(setNotification(null,"wrong username or password"))
       // setErrorMessage("wrong username or password");
@@ -80,7 +82,7 @@ const App = () => {
       setTitle("");
       setAuthor("");
       setUrl("");
-      dispatch(setNotification(`a new blog ${title} by ${author} added`))
+      dispatch(setNotification(`a new blog "${title}" by ${author} added`))
     } catch (error) {
       dispatch(setNotification(null,errorMessage))
     }
@@ -95,6 +97,7 @@ const App = () => {
       };
       const returnedBlog = await blogService.like(blog.id, updatedBlog);
       dispatch(likeBlog(returnedBlog))
+      dispatch(setNotification(`Liked "${returnedBlog.title}" by ${returnedBlog.author}`))
     } catch (error) {
       console.error(error);
       dispatch(setNotification(null,"Error updating likes"))
@@ -147,6 +150,7 @@ const App = () => {
           value={username}
           onChange={({ target }) => setUsername(target.value)}
           data-testid="username"
+          className="mb-2 mx-2"
         />
       </div>
       <div>
@@ -157,9 +161,10 @@ const App = () => {
           value={password}
           onChange={({ target }) => setPassword(target.value)}
           data-testid="password"
+          className="mb-2 mx-2"
         />
       </div>
-      <button type="submit">Login</button>
+      <button className="btn btn-success ms-2 " type="submit">Login</button>
     </form>
   );
 
@@ -170,31 +175,16 @@ const App = () => {
     <div className='container'>
       <Nav user={user} handleLogout={handleLogout}/>
       <Notification message={message} error={errorMessage} />
+      
       {user === null && loginForm}
       {user !== null && (
         <>
             <Routes>
               <Route path="/users" element={<Users/>}></Route>
-              <Route
-                path ="/"
-                element={
-                  <>
-                  <h3>Create New</h3>
-                  {blogForm()}
-                  {blogs.length > 0 ? (
-                  sortedBlogs.map((blog) => (
-                    <Blog
-                      key={blog.id}
-                      blog={blog}
-                      
-                    />
-                  ))
-                ) : (
-                  <div>loading ...</div>
-                )}
-                  </>
-                  
-                }
+              <Route path ="/" element={<Home
+                blogForm={blogForm}
+                sortedBlogs = {sortedBlogs}
+              />}
               ></Route>
               <Route path="/users/:id" element={<User />} />
               <Route path="/blogs/:id" element={
