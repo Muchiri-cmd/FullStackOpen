@@ -7,5 +7,10 @@
   },
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose-unique-validator": "^4.0.1"
+  }
 }
