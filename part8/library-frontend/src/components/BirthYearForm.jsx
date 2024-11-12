@@ -9,8 +9,7 @@ const BirthYearForm = () => {
   const [selectedAuthor, setSelectedAuthor] = useState(null);
 
   const authors = useQuery(ALL_AUTHORS)
-  console.log(authors.data.allAuthors)
-
+ 
   const authorOptions = authors.data.allAuthors.map(author => ({
     value: author.name,
     label: author.name, 

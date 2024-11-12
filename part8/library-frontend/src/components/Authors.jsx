@@ -3,10 +3,10 @@ import { ALL_AUTHORS } from "../queries/queries"
 import BirthYearForm from "./BirthYearForm"
 
 
-const Authors = (props) => {
+const Authors = ({ show, token }) => {
   const authors = useQuery(ALL_AUTHORS)
   
-  if (!props.show) {
+  if (!show) {
     return null
   }
 
@@ -34,8 +34,14 @@ const Authors = (props) => {
           ))}
         </tbody>
       </table>
-      <h2>Set BirthYear</h2>
-      <BirthYearForm/>
+    
+      {token && (
+        <>
+          <h2>Set BirthYear</h2>
+          <BirthYearForm />
+        </>
+      )}
+      
     </div>
   )
 }
