@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "library-backend.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev":"node library-backend.js"
   },
   "author": "",
   "license": "ISC",

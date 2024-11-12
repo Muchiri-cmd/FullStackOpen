@@ -108,7 +108,6 @@ const resolvers = {
     },
 
     allBooks: async(root,args) => {
-
       let query = {}
       if(args.author) {
         const author = await Author.findOne({ name: args.author })
