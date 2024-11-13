@@ -10,7 +10,7 @@ const BirthYearForm = () => {
 
   const authors = useQuery(ALL_AUTHORS)
  
-  const authorOptions = authors.data.allAuthors.map(author => ({
+  const authorOptions = authors?.data?.allAuthors.map(author => ({
     value: author.name,
     label: author.name, 
   }));

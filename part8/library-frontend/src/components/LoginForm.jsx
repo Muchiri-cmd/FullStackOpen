@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
-import { useMutation } from '@apollo/client'
+import { useApolloClient, useMutation } from '@apollo/client'
 import { LOGIN } from '../queries/queries'
 
 const LoginForm = ({ show, setError, setToken,setPage }) => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const client = useApolloClient()
 
 
   const [ login, result ] = useMutation(LOGIN, {
@@ -19,6 +20,7 @@ const LoginForm = ({ show, setError, setToken,setPage }) => {
       const token = result.data.login.value
       setToken(token)
       localStorage.setItem('user-token', token)
+      client.resetStore() // Update Apollo Client headers after login
       setPage("authors") 
     }
   }, [result.data])
