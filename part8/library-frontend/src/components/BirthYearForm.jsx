@@ -4,7 +4,7 @@ import { ALL_AUTHORS, EDIT_BIRTHYEAR } from "../queries/queries"
 import Select from 'react-select';
 
 
-const BirthYearForm = () => {
+const BirthYearForm = ({ setError }) => {
   const [born, setBorn] = useState('')
   const [selectedAuthor, setSelectedAuthor] = useState(null);
 
@@ -15,7 +15,14 @@ const BirthYearForm = () => {
     label: author.name, 
   }));
 
-  const [ changeBirthYear ] = useMutation(EDIT_BIRTHYEAR)
+  const [ changeBirthYear ] = useMutation(EDIT_BIRTHYEAR,{
+    onError: (error) => {
+      setError(error.graphQLErrors[0].message)
+      setTimeout(() => {
+        setError(null)
+      },3500)
+    }
+  })
 
   const submit = (event) => {
     event.preventDefault()

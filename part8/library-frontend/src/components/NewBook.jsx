@@ -1,26 +1,52 @@
 import { useMutation } from '@apollo/client'
 import { useState } from 'react'
-import { ADD_BOOK, ALL_BOOKS } from '../queries/queries'
+import { ADD_BOOK, ALL_BOOKS,FILTERED_BOOKS } from '../queries/queries'
 
-const NewBook = (props) => {
+const NewBook = ({ show,setPage,selectedGenre,setError }) => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [published, setPublished] = useState('')
   const [genre, setGenre] = useState('')
   const [genres, setGenres] = useState([])
 
-  const [ addBook ] = useMutation(ADD_BOOK, {
-    refetchQueries:[ { query:ALL_BOOKS }]
-  })
+  const [addBook] = useMutation(ADD_BOOK, {
+    update: (cache, { data: { addBook } }) => {    
+      const { allBooks } = cache.readQuery({ query: ALL_BOOKS })
+      cache.writeQuery({
+        query: ALL_BOOKS,
+        data: { allBooks: allBooks.concat(addBook) },
+      })
+  
+      if (selectedGenre) {
+        const data = cache.readQuery({
+          query: FILTERED_BOOKS,
+          variables: { genre: selectedGenre },
+        })
 
-  if (!props.show) {
+        const filteredBooks = data ? data.allBooks : []
+        const newBook = addBook ? addBook : {}
+      
+        cache.writeQuery({
+          query: FILTERED_BOOKS,
+          variables: { genre: selectedGenre },
+          data: { allBooks: [...filteredBooks, newBook] },
+        })
+      }
+    },
+    onError: (error) => {
+      setError(error.graphQLErrors[0].message)
+      setTimeout(() => {
+        setError(null)
+      },3500)
+    }
+  });
+
+  if (!show) {
     return null
   }
 
   const submit = async (event) => {
     event.preventDefault()
-
-    console.log('add book...')
     const publishedYear = parseInt(published, 10);
 
     addBook({ variables: { title,published:publishedYear, author, genres }})
@@ -30,6 +56,7 @@ const NewBook = (props) => {
     setAuthor('')
     setGenres([])
     setGenre('')
+    setPage("books")
   }
 
   const addGenre = () => {

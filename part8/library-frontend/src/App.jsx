@@ -9,7 +9,9 @@ import Recommendations from "./components/Recommendations";
 const App = () => {
   const [page, setPage] = useState("authors");
   const [token,setToken] = useState(null)
+  const [genre,setGenre] = useState('')
   const client = useApolloClient()
+  const [error,setError] = useState(null)
 
   const logout = () => {
     setToken(null)
@@ -20,6 +22,7 @@ const App = () => {
 
   return (
     <div>
+      <Error error={error}/>
       <div>
         <button onClick={() => setPage("authors")}>authors</button>
         <button onClick={() => setPage("books")}>books</button>
@@ -36,18 +39,26 @@ const App = () => {
         }
       </div>
 
-      <Authors show={page === "authors"} token={token}/>
+      <Authors show={page === "authors"} token={token} setError={setError}/>
 
-      <Books show={page === "books"} />
+      <Books show={page === "books"} genre={genre} setGenre={setGenre} />
 
-      <NewBook show={page === "add"} />
+      <NewBook show={page === "add"} setPage={setPage} selectedGenre={genre} setError={setError}/>
 
-      <LoginForm show={page === "login"} setToken={setToken} setPage={setPage}/>
+      <LoginForm show={page === "login"} setToken={setToken} setPage={setPage} setError={setError}/>
 
       <Recommendations show={page === "recommendations"}/>
 
     </div>
   );
 };
+
+const Error = ({error}) => {
+  return(
+    <div>
+     <p style={{ color: 'red' }}>{error}</p>
+    </div>
+  )
+}
 
 export default App;

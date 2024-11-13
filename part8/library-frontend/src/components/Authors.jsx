@@ -3,7 +3,7 @@ import { ALL_AUTHORS } from "../queries/queries"
 import BirthYearForm from "./BirthYearForm"
 
 
-const Authors = ({ show, token }) => {
+const Authors = ({ show, token,setError }) => {
   const authors = useQuery(ALL_AUTHORS)
   
   if (!show) {
@@ -38,7 +38,7 @@ const Authors = ({ show, token }) => {
       {token && (
         <>
           <h2>Set BirthYear</h2>
-          <BirthYearForm />
+          <BirthYearForm setError={setError}/>
         </>
       )}
       
