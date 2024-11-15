@@ -6,7 +6,8 @@ import LoginForm from "./components/LoginForm";
 import { useApolloClient } from "@apollo/client";
 import Recommendations from "./components/Recommendations";
 import { useSubscription } from "@apollo/client";
-import { BOOK_ADDED } from "./queries/queries";
+import { ALL_BOOKS, BOOK_ADDED } from "./queries/queries";
+import { updateCache } from "./update";
 
 const App = () => {
   const [page, setPage] = useState("authors");
@@ -24,12 +25,18 @@ const App = () => {
 
   useSubscription(BOOK_ADDED,{
     onData:({ data }) => {
-      if (data?.data?.bookAdded) {  
-        const title = data.data.bookAdded.title
-        const authorName = data.data.bookAdded.author.name
-        alert(`${title} by ${authorName} added successfully`)
+      const addedBook = data?.data?.bookAdded
+
+      if (addedBook) {
+        //notify user
+          notify(`${addedBook.title} by ${addedBook.author.name} added successfully`)
+
+          // Update cache
+          updateCache(client.cache, { query: ALL_BOOKS }, addedBook)
+      } else {
+          console.error("No bookAdded data received")
       }
-      console.log('wtf')
+
     },
   })
 
@@ -74,5 +81,11 @@ const Error = ({error}) => {
     </div>
   )
 }
+
+const notify = (msg) => {
+  alert(msg)
+}
+
+
 
 export default App;

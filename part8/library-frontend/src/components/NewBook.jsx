@@ -12,10 +12,13 @@ const NewBook = ({ show,setPage,selectedGenre,setError }) => {
   const [addBook] = useMutation(ADD_BOOK, {
     update: (cache, { data: { addBook } }) => {    
       const { allBooks } = cache.readQuery({ query: ALL_BOOKS })
-      cache.writeQuery({
-        query: ALL_BOOKS,
-        data: { allBooks: allBooks.concat(addBook) },
-      })
+
+      if (!allBooks.find(book => book.id === addBook.id)) {
+        cache.writeQuery({
+          query: ALL_BOOKS,
+          data: { allBooks: allBooks.concat(addBook) },
+        });
+      }
   
       if (selectedGenre) {
         const data = cache.readQuery({
@@ -26,11 +29,13 @@ const NewBook = ({ show,setPage,selectedGenre,setError }) => {
         const filteredBooks = data ? data.allBooks : []
         const newBook = addBook ? addBook : {}
       
-        cache.writeQuery({
+        if(!filteredBooks.find(book => book.id === addBook.id)){
+          cache.writeQuery({
           query: FILTERED_BOOKS,
           variables: { genre: selectedGenre },
           data: { allBooks: [...filteredBooks, newBook] },
-        })
+          })
+        }
       }
     },
     onError: (error) => {
