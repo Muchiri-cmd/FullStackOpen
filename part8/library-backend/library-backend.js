@@ -20,6 +20,7 @@ const User = require('./models/User')
 
 const typeDefs = require('./schema')
 const resolvers = require('./resolvers')
+const { bookCountLoader } = require('./loaders/bookLoader')
 
 
 require('dotenv').config()
@@ -37,6 +38,8 @@ mongoose.connect(MONGODB_URI,{
   .catch((error) => {
     console.log('error connecting to db', error.message)
   })
+
+mongoose.set('debug',true)
 
 //setup
 const start = async () => {
@@ -79,7 +82,7 @@ const start = async () => {
         if (auth && auth.startsWith('Bearer ')) {
           const decodedToken = jwt.verify(auth.substring(7), process.env.JWT_SECRET)
           const currentUser = await User.findById(decodedToken.id)
-          return { currentUser }
+          return { currentUser,bookCountLoader }
         }
       }
     })

@@ -11,7 +11,9 @@ const pubsub = new PubSub()
 
 const resolvers = {
   Query: {
-    bookCount: () => Book.collection.countDocuments(),
+    bookCount: (author,args,{ bookCountLoader }) => {
+      return bookCountLoader.load(author._id.toString());
+    },
     authorCount: () => Author.collection.countDocuments(),
     allAuthors : async() => {
       try {
