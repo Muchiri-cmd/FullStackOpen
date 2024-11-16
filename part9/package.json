@@ -4,12 +4,14 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "calculateBmi" : "node-ts bmiCalculator.ts"
+    "calculateBmi": "ts-node bmiCalculator.ts",
+    "exerciseCalc": "ts-node exerciseCalculator.ts"
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "node-ts": "^6.1.3",
     "ts-node": "^10.9.2"
   }
 }
