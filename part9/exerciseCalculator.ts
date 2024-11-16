@@ -1,3 +1,5 @@
+import { isNotNumber } from "./utils/isNotNumber"
+
 interface Metrics {
   periodLength:number,
   trainingDays:number,
@@ -7,57 +9,92 @@ interface Metrics {
   target:number,
   average:number
 }
- 
+interface Args {
+  targetHours : number,
+  dailyHours:number[],
+};
+
+const parseArgs = (args: string[]): Args => {
+  if (args.length < 4) throw new Error('Not enough arguments');
+
+  const targetHours = Number(args[2]);
+  
+  if (isNotNumber(targetHours)) {
+    throw new Error('Target hours must be a number');
+  }
+  
+
+  const dailyHours = args.slice(3).map(day => {
+    const hours = Number(day);
+    if (isNotNumber(hours)) {
+      throw new Error("All hours must be numbers");
+    }
+    return hours;
+  });
+
+  return {
+    targetHours,
+    dailyHours,
+  };
+};
 
 const calculateExercises = (days:number[],targetHours:number) : Metrics => {
+  const trainingDays = getTrainingDays(days);
+  const average = getAverageHours(days);
+  const rating = getRating(average,targetHours);
+
   return{
     periodLength:days.length,
-    trainingDays:getTrainingDays(days),
-    success:detemineSuccess(days,targetHours),
-    rating:getRating(days),
-    ratingDescription:getRatingDescription(getRating(days)),
+    trainingDays,
+    success: average >= targetHours,
+    rating,
+    ratingDescription:getRatingDescription(rating),
     target:targetHours,
-    average:getAverageHours(days)
+    average,
+  };
+};
+
+try{
+  const { targetHours,dailyHours} = parseArgs(process.argv);
+  console.log(calculateExercises(dailyHours,targetHours));
+} catch (error:unknown){
+  let errorMessage = 'Something bad happened.';
+  if (error instanceof Error) {
+    errorMessage += ' Error: ' + error.message;
   }
+  console.log(errorMessage);
 }
 
 function getTrainingDays(days:number[]):number{
-  let trainingDays = 0;
-  for (let day of days){
-      if (day !== 0 ){
-        trainingDays ++;
-      }
-    }
-  return trainingDays
+  return days.filter(day => day > 0).length ;
 }
 
-function detemineSuccess(days:number[],targetHours:number):boolean{
-  for (let day of days){
-    if (day < targetHours ) return false
+function getRating(average:number,targetHours:number):number{
+  if ( average > targetHours * 1.5 ) {
+    return 3;
+  } else if ( average >= ( targetHours - 0.5)) {
+    return 2;
+  } else {
+    return 1;
   }
-  return true
-}
-
-function getRating(days:number[]):number{
-  let trainingDays = getTrainingDays(days);
-  if ( trainingDays <= 2) return 1;
-  if ( trainingDays <= 5) return 2;
-  if ( trainingDays > 5 ) return 3;
 }
 
 function getRatingDescription(rating:number):string{
-  if ( rating == 1 ) return "Too bad.Consistency is king !";
-  if ( rating == 2) return "Not too bad but could be better";
-  if ( rating == 3 ) return "Good , now make it better.Consistency is the game "
+  switch (rating) {
+    case 1:
+      return "Needs improvement. You fell significantly short of the target.";
+    case 2:
+      return "Not too bad but could be better.";
+    case 3:
+      return "Good. Keep putting in the work! ";
+    default:
+      return "Invalid rating.";
+  }
 }
 
 function getAverageHours(days:number[]):number{  
-  let total:number = 0;
-  for(let day of days){
-    total += day;
-  }
-  return total/days.length;
+  const total = days.reduce((sum,day) => sum + day, 0);
+  return total / days.length ;
  
 }
 
-console.log(calculateExercises([3, 0, 2, 4.5, 0, 3, 1],2));
