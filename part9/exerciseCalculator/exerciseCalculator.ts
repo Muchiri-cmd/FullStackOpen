@@ -38,7 +38,7 @@ const parseArgs = (args: string[]): Args => {
   };
 };
 
-const calculateExercises = (days:number[],targetHours:number) : Metrics => {
+export const calculateExercises = (days:number[],targetHours:number) : Metrics => {
   const trainingDays = getTrainingDays(days);
   const average = getAverageHours(days);
   const rating = getRating(average,targetHours);
