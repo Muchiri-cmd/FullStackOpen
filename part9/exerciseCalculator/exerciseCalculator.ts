@@ -1,4 +1,4 @@
-import { isNotNumber } from "./utils/isNotNumber"
+import { isNotNumber } from "./utils/isNotNumber";
 
 interface Metrics {
   periodLength:number,
