@@ -1,5 +1,7 @@
 import patientData from '../data/patients';
-import { SanitizedPatientData, Patient } from '../types';
+import { SanitizedPatientData, Patient, NewPatient } from '../types';
+import {v1 as uuid} from 'uuid';
+
 
 const getAll = ():Patient[] => {
   return patientData;
@@ -15,7 +17,19 @@ const getSanitizedeData = ():SanitizedPatientData[] =>{
   }));
 };
 
+const addPatient = ( patient:NewPatient):Patient => {
+  const newPatient = {
+    id:uuid(),
+   ...patient
+  };
+
+  patientData.push(newPatient);
+  return newPatient;
+};
+
+
 export default{
   getAll,
   getSanitizedeData,
+  addPatient
 };

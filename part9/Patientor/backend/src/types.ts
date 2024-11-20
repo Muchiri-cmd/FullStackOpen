@@ -14,3 +14,4 @@ export interface Patient {
 }
 
 export type SanitizedPatientData = Omit <Patient, "ssn" | "entries">;
+export type NewPatient = Omit<Patient, 'id'>;
