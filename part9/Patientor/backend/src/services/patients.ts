@@ -1,5 +1,5 @@
 import patientData from '../data/patients';
-import { SanitizedPatientData, Patient, NewPatient } from '../types';
+import { SanitizedPatientData, Patient, NewPatient } from '../types/types';
 import {v1 as uuid} from 'uuid';
 
 
