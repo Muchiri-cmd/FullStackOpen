@@ -1,9 +1,6 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const utils_1 = __importDefault(require("../utils/utils"));
+const utils_1 = require("../utils/utils");
 const data = [
     {
         "id": "d2773336-f723-11e9-8f0b-362b9e155667",
@@ -47,8 +44,7 @@ const data = [
     }
 ];
 const patientData = data.map(obj => {
-    const patient = (0, utils_1.default)(obj);
-    patient.id = obj.id;
-    return patient;
+    const validatedPatient = utils_1.NewPatientSchema.parse(obj);
+    return Object.assign(Object.assign({}, validatedPatient), { id: obj.id });
 });
 exports.default = patientData;
