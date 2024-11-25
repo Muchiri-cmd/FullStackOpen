@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Route, Link, Routes } from "react-router-dom";
 import { Button, Divider, Container, Typography } from '@mui/material';
 
 import { apiBaseUrl } from "./constants";
-import { Patient,Diagnosis } from "./types";
+import { Patient,Diagnosis } from "./types/types";
 
 import patientService from "./services/patients";
 import diagnosesService from "./services/diagnoses";
@@ -31,7 +31,7 @@ const App = () => {
     };
     void fetchDiagnoses();
   }, []);
-  
+ 
   return (
     <div className="App">
       <Router>
@@ -52,5 +52,6 @@ const App = () => {
     </div>
   );
 };
+
 
 export default App;
