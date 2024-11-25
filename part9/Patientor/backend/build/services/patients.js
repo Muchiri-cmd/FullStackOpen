@@ -8,22 +8,31 @@ const uuid_1 = require("uuid");
 const getAll = () => {
     return patients_1.default;
 };
+const getPatientById = (id) => {
+    const patient = patients_1.default.find(patient => patient.id === id);
+    if (!patient) {
+        throw new Error(`Patient with id ${id} not found`);
+    }
+    console.log(patient);
+    return patient;
+};
 const getSanitizedeData = () => {
     return patients_1.default.map(({ id, name, dateOfBirth, gender, occupation }) => ({
         id,
         name,
         dateOfBirth,
         gender,
-        occupation
+        occupation,
     }));
 };
 const addPatient = (patient) => {
-    const newPatient = Object.assign({ id: (0, uuid_1.v1)() }, patient);
+    const newPatient = Object.assign({ id: (0, uuid_1.v1)(), entries: [] }, patient);
     patients_1.default.push(newPatient);
     return newPatient;
 };
 exports.default = {
     getAll,
     getSanitizedeData,
-    addPatient
+    addPatient,
+    getPatientById
 };

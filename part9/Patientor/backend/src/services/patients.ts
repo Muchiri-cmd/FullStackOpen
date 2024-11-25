@@ -7,20 +7,30 @@ const getAll = ():Patient[] => {
   return patientData;
 };
 
+const getPatientById = (id: string): Patient => {
+   const patient = patientData.find(patient => patient.id === id);
+   if (!patient) {
+     throw new Error(`Patient with id ${id} not found`);
+   }
+   console.log(patient);
+   return patient;
+};
+
 const getSanitizedeData = ():SanitizedPatientData[] =>{
   return patientData.map(({ id,name,dateOfBirth, gender,occupation }) => ({
     id,
     name,
     dateOfBirth,
     gender,
-    occupation
+    occupation,
   }));
 };
 
 const addPatient = ( patient:NewPatient):Patient => {
   const newPatient = {
-    id:uuid(),
-   ...patient
+    id: uuid(),
+    entries: [],
+    ...patient
   };
 
   patientData.push(newPatient);
@@ -31,5 +41,6 @@ const addPatient = ( patient:NewPatient):Patient => {
 export default{
   getAll,
   getSanitizedeData,
-  addPatient
+  addPatient,
+  getPatientById
 };

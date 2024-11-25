@@ -11,6 +11,9 @@ router.get('/', (_req, res) => {
     // console.log('fetching patients');
     res.send(patients_1.default.getSanitizedeData());
 });
+router.get('/:id', (req, res) => {
+    res.send(patients_1.default.getPatientById(req.params.id));
+});
 router.post('/', newPatientParser_1.newPatientParser, (req, res) => {
     const newPatient = patients_1.default.addPatient(req.body);
     res.json(newPatient);
