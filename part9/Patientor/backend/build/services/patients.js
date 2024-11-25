@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const patients_1 = __importDefault(require("../data/patients"));
 const uuid_1 = require("uuid");
+const parseDiagnosis_1 = __importDefault(require("../middleware/parseDiagnosis"));
 const getAll = () => {
     return patients_1.default;
 };
@@ -26,13 +27,20 @@ const getSanitizedeData = () => {
     }));
 };
 const addPatient = (patient) => {
-    const newPatient = Object.assign({ id: (0, uuid_1.v1)(), entries: [] }, patient);
+    const newPatient = Object.assign(Object.assign({ id: (0, uuid_1.v1)() }, patient), { entries: patient.entries || [] });
     patients_1.default.push(newPatient);
     return newPatient;
+};
+const addEntry = (id, entry) => {
+    const patient = getPatientById(id);
+    const newEntry = Object.assign(Object.assign({}, entry), { id: (0, uuid_1.v1)(), diagnosisCodes: (0, parseDiagnosis_1.default)(entry) });
+    patient.entries.push(newEntry);
+    return patient;
 };
 exports.default = {
     getAll,
     getSanitizedeData,
     addPatient,
-    getPatientById
+    getPatientById,
+    addEntry
 };

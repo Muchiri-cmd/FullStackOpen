@@ -1,6 +1,7 @@
 import patientData from '../data/patients';
-import { SanitizedPatientData, Patient, NewPatient } from '../types/types';
+import { SanitizedPatientData, Patient, NewPatient,Entry, EntryWithoutId } from '../types/types';
 import {v1 as uuid} from 'uuid';
+import parseDiagnosisCodes from '../middleware/parseDiagnosis';
 
 
 const getAll = ():Patient[] => {
@@ -27,14 +28,25 @@ const getSanitizedeData = ():SanitizedPatientData[] =>{
 };
 
 const addPatient = ( patient:NewPatient):Patient => {
-  const newPatient = {
+  const newPatient: Patient = {
     id: uuid(),
-    entries: [],
-    ...patient
+    ...patient,
+    entries: patient.entries as Entry[] || [],
   };
 
   patientData.push(newPatient);
   return newPatient;
+};
+
+const addEntry = (id: string, entry: EntryWithoutId): Patient => {
+  const patient = getPatientById(id);
+  const newEntry = {
+    ...entry,
+    id: uuid(),
+    diagnosisCodes: parseDiagnosisCodes(entry), 
+  };
+  patient.entries.push(newEntry);
+  return patient;
 };
 
 
@@ -42,5 +54,6 @@ export default{
   getAll,
   getSanitizedeData,
   addPatient,
-  getPatientById
+  getPatientById,
+  addEntry
 };
