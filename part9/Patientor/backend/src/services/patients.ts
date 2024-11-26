@@ -1,5 +1,5 @@
 import patientData from '../data/patients';
-import { SanitizedPatientData, Patient, NewPatient,Entry, EntryWithoutId } from '../types/types';
+import { SanitizedPatientData, Patient, NewPatient,Entry, EntryWithoutId} from '../types/types';
 import {v1 as uuid} from 'uuid';
 import parseDiagnosisCodes from '../middleware/parseDiagnosis';
 
@@ -13,7 +13,7 @@ const getPatientById = (id: string): Patient => {
    if (!patient) {
      throw new Error(`Patient with id ${id} not found`);
    }
-   console.log(patient);
+  //  console.log(patient);
    return patient;
 };
 
@@ -38,15 +38,15 @@ const addPatient = ( patient:NewPatient):Patient => {
   return newPatient;
 };
 
-const addEntry = (id: string, entry: EntryWithoutId): Patient => {
+const addEntry = (id: string, entry: EntryWithoutId): Entry => {
   const patient = getPatientById(id);
-  const newEntry = {
+  const newEntry: Entry = {
     ...entry,
     id: uuid(),
     diagnosisCodes: parseDiagnosisCodes(entry), 
   };
   patient.entries.push(newEntry);
-  return patient;
+  return newEntry;
 };
 
 

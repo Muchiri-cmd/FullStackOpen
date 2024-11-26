@@ -2,8 +2,8 @@ import { Gender } from "../types/types";
 import { z } from 'zod';
 
 export const NewPatientSchema = z.object({
-  name:z.string(),
-  occupation:z.string(),
+  name:z.string().min(1,"Name is required"),
+  occupation:z.string().min(1,"Occupation is required"),
   gender:z.nativeEnum(Gender),
   ssn:z.string().optional(),
   dateOfBirth:z.string().date().optional(),
@@ -16,19 +16,19 @@ export const NewPatientSchema = z.object({
   })).optional(),
 });
 
-const HealthCheckEntrySchema = z.object({
-  description: z.string(),
+export const HealthCheckEntrySchema = z.object({
+  description: z.string().min(1,"Description is required"),
   date: z.string().date(),
-  specialist: z.string(),
+  specialist: z.string().min(1,"Specialist is required"),
   diagnosisCodes: z.array(z.string()).optional(),
   type: z.literal("HealthCheck"),
   healthCheckRating: z.number().int().min(0).max(3),  
 });
 
 const OccupationalHealthcareEntrySchema = z.object({
-  description: z.string(),
+  description: z.string().min(1,"Description is required"),
   date: z.string().date(),
-  specialist: z.string(),
+  specialist: z.string().min(1,"Specialist is required"),
   diagnosisCodes: z.array(z.string()).optional(),
   type: z.literal("OccupationalHealthcare"),
   sickLeave: z.object({
@@ -43,9 +43,9 @@ const TypeSchema = z.object({
 });
 
 const HospitalEntrySchema = z.object({
-  description: z.string(),
+  description: z.string().min(1,"Description is required"),
   date: z.string().date(),
-  specialist: z.string(),
+  specialist: z.string().min(1,"Specialist is required"),
   diagnosisCodes: z.array(z.string()).optional(),
   type: z.literal("Hospital"),
   discharge: z.object({

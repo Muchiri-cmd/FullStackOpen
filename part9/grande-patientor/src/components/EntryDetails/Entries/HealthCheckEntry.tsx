@@ -15,8 +15,8 @@ const HealthCheckEntry = ({ entry, diagnosis } : EntryDetailProps) => {
               color: 
                 entry.healthCheckRating === 0 ? 'green' : 
                 entry.healthCheckRating === 1 ? 'yellow' : 
-                entry.healthCheckRating >= 2 ? 'orange' :
-                entry.healthCheckRating >= 2 ? 'red' : 'inherit'
+                entry.healthCheckRating === 2 ? 'orange' :
+                entry.healthCheckRating === 3 ? 'red' : 'inherit'
             }}
           />
         )}

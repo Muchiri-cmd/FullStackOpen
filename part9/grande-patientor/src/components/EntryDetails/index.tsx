@@ -22,6 +22,7 @@ const EntryDetails = ({entry,diagnoses} : EntryDetailProps) => {
 };
 
 const assertNever = (value: never): never => {
+  console.error("Unhandled entry type:", value);
   throw new Error(
     `Unhandled discriminated union member: ${JSON.stringify(value)}`
   );

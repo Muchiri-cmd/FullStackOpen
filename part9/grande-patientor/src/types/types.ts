@@ -19,7 +19,7 @@ export enum HealthCheckRating {
   "CriticalRisk" = 3
 }
 
-interface HealthCheckEntry extends BaseEntry {
+export interface HealthCheckEntry extends BaseEntry {
   type: "HealthCheck";
   healthCheckRating: HealthCheckRating;
 }
@@ -77,3 +77,4 @@ export enum Gender {
 export type SanitizedPatientData = Omit <Patient, "ssn" | "entries">;
 export type NewPatient = Omit<Patient, 'id'>;
 export type PatientFormValues = Omit<Patient, "id" | "entries">;
+export type HealthCheckEntryFormValues = Omit<HealthCheckEntry, "id">;

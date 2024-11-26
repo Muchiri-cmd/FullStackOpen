@@ -14,7 +14,7 @@ const getPatientById = (id) => {
     if (!patient) {
         throw new Error(`Patient with id ${id} not found`);
     }
-    console.log(patient);
+    //  console.log(patient);
     return patient;
 };
 const getSanitizedeData = () => {
@@ -35,7 +35,7 @@ const addEntry = (id, entry) => {
     const patient = getPatientById(id);
     const newEntry = Object.assign(Object.assign({}, entry), { id: (0, uuid_1.v1)(), diagnosisCodes: (0, parseDiagnosis_1.default)(entry) });
     patient.entries.push(newEntry);
-    return patient;
+    return newEntry;
 };
 exports.default = {
     getAll,

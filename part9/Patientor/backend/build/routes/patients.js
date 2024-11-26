@@ -20,7 +20,7 @@ router.post('/', newPatientParser_1.newPatientParser, (req, res) => {
     res.json(newPatient);
 });
 router.post('/:id/entries', newEntryParser_1.default, (req, res) => {
-    const patient = patients_1.default.addEntry(req.params.id, req.body);
-    res.json(patient);
+    const newEntry = patients_1.default.addEntry(req.params.id, req.body);
+    res.json(newEntry);
 });
 exports.default = router;
