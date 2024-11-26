@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import patientService from '../../services/patients';
 import { useEffect,useState } from "react";
-import { Diagnosis, HealthCheckEntryFormValues, Patient } from "../../types/types";
+import { Diagnosis, EntryWithoutId, Patient } from "../../types/types";
 import FemaleIcon from '@mui/icons-material/Female';
 import MaleIcon from '@mui/icons-material/Male';
 import EntryDetails from "../EntryDetails";
@@ -43,7 +43,7 @@ const PatientDetails = ({ diagnoses }: PatientDetailsProps) => {
     return <div>Loading...</div>;
   }
 
-  const submitEntry = async(values:HealthCheckEntryFormValues) => {
+  const submitEntry = async(values:EntryWithoutId) => {
     try {
       if (id) {
         const newEntry = await entryService.addEntry(id, values);
@@ -82,7 +82,8 @@ const PatientDetails = ({ diagnoses }: PatientDetailsProps) => {
         modalOpen={modalOpen}
         onClose={closeModal}
         onSubmit={submitEntry}
-        error={error}        
+        error={error}
+        diagnoses={diagnoses}        
       /> 
       <Button variant="contained"  onClick={() => openModal()}
       color="primary">ADD NEW ENTRY</Button>

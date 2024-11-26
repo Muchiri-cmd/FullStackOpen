@@ -32,8 +32,8 @@ const OccupationalHealthcareEntrySchema = zod_1.z.object({
     diagnosisCodes: zod_1.z.array(zod_1.z.string()).optional(),
     type: zod_1.z.literal("OccupationalHealthcare"),
     sickLeave: zod_1.z.object({
-        startDate: zod_1.z.string().date(),
-        endDate: zod_1.z.string().date(),
+        startDate: zod_1.z.string().date().nullable().optional(),
+        endDate: zod_1.z.string().date().nullable().optional(),
     }).optional(),
     employerName: zod_1.z.string().optional(),
 });
